@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Node
+node_modules/
+webapp/dist/
+webapp/build/
+
+# Rust / Tauri
+native/target/
+native/gen/
+native/binaries/*.exe
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Secrets
+.env
+credentials/
+server/settings.json
+*.pem
+
+# Logs
+logs/*.log
+
+# Uploads (runtime)
+uploads/*
+!uploads/.gitkeep
+!uploads/**/.gitkeep
+
+# Testing
+test_output/
+.pytest_cache/
+audit_report_*.txt
+e2e_results.txt
+backend_pid.txt
+webapp/test-results/

@@ -1,0 +1,87 @@
+# Google AI MCP
+
+FastMCP 3.2 server for Google AI services — Gemini Chat, Nano Banana image generation, Veo video, **Gemini Omni** any-to-any video, Lyria music, TTS, Gemini Live, and text embeddings.
+
+## Quick Start
+
+```powershell
+# Install deps
+uv sync --extra test --extra dev
+npm --prefix webapp ci
+
+# Start backend + frontend
+.\start.ps1
+
+# or backend only
+uv run python -m google_ai_mcp.server
+```
+
+- Frontend: http://127.0.0.1:11015
+- Backend API: http://127.0.0.1:11014
+- API Docs: http://127.0.0.1:11014/api/docs
+- MCP HTTP: http://127.0.0.1:11014/mcp
+
+## Services
+
+| Service | Model | Mode | Requires |
+|---|---|---|---|
+| Chat | Gemini 3.1 Pro, Gemma 4 | google-genai | GOOGLE_API_KEY |
+| Image | Nano Banana 2 / Pro | google-genai | GOOGLE_API_KEY |
+| Video | Veo 3.1 Preview | Vertex AI | GOOGLE_CLOUD_PROJECT |
+| **Omni** | **Gemini Omni Flash** | google-genai / Vertex | GOOGLE_API_KEY or GOOGLE_CLOUD_PROJECT |
+| Music | Lyria 3 Pro / Clip | Vertex (global) | GOOGLE_CLOUD_PROJECT |
+| Speech | Gemini TTS, Live | google-genai | GOOGLE_API_KEY |
+| Embeddings | gemini-embedding-001 | google-genai | GOOGLE_API_KEY |
+
+All services fall back to mock mode when credentials are missing. Gemini Omni API is rolling out — mock mode returns placeholders until GA.
+
+## MCP Tools
+
+| Tool | Operations |
+|---|---|
+| `google_ai_chat` | chat, list_models |
+| `google_ai_image` | generate, list_models |
+| `google_ai_video` | generate, list_models |
+| `google_ai_omni` | generate, list_models |
+| `google_ai_music` | generate, list_models |
+| `google_ai_speech` | tts, list_voices, list_models |
+| `google_ai_embeddings` | embed, list_models |
+| `google_ai_status` | Health check all services |
+| `show_google_ai_status_card` | Prefab UI card |
+
+## Configuration
+
+Set via environment variables or the Settings page in the webapp:
+
+```powershell
+$env:GOOGLE_API_KEY = "your-api-key"
+$env:GOOGLE_CLOUD_PROJECT = "your-project-id"
+```
+
+## Docker
+
+```powershell
+docker compose up -d --build
+# Frontend: http://localhost:11015
+# Backend:  http://localhost:11014
+```
+
+## Native Desktop App
+
+```powershell
+just build-native
+# Installer: native/target/release/bundle/nsis/Google AI MCP_0.1.0_x64-setup.exe
+```
+
+## Development
+
+```powershell
+just build      # Install deps
+just lint       # Run lint checks
+just test       # Run tests
+just serve      # Start dev servers
+```
+
+## Repository
+
+https://github.com/sandraschi/google-ai-mcp

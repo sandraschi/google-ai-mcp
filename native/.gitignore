@@ -1,0 +1,4 @@
+# Tauri build artifacts
+binaries/
+target/
+gen/

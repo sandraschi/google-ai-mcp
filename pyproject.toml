@@ -1,0 +1,47 @@
+[project]
+name = "google-ai-mcp"
+version = "0.1.0"
+description = "FastMCP 3.2 server for Google AI services — Gemini Chat, Nano Banana image gen, Veo video, Lyria music, TTS, Live, Embeddings"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "fastmcp>=3.2.0,<4",
+    "uvicorn[standard]>=0.38.0",
+    "websockets>=15.0.0",
+    "pydantic>=2.0.0",
+    "google-genai>=1.20.0",
+    "google-cloud-aiplatform>=1.127.0",
+    "google-auth>=2.43.0",
+    "python-multipart>=0.0.20",
+    "aiofiles>=24.0.0",
+    "Pillow>=10.0.0",
+    "structlog>=24.0.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-asyncio", "pytest-cov", "httpx"]
+dev = ["ruff", "mypy"]
+
+[project.scripts]
+google-ai-mcp = "google_ai_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "S", "UP", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["S101"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

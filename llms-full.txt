@@ -1,0 +1,51 @@
+# Google AI MCP
+
+FastMCP 3.2 MCP server providing access to Google AI services via the Model Context Protocol.
+
+## Architecture
+
+- **Backend**: FastMCP 3.2 (Python 3.12+) on port 11014
+- **Frontend**: Vite React (TypeScript) on port 11015
+- **MCP Transport**: Streamable HTTP at /mcp
+- **REST API**: FastAPI at /api/*
+- **Native**: Tauri 2.0 desktop wrapper in native/
+
+## Key Files
+
+| File | Purpose |
+|---|---|
+| `src/google_ai_mcp/server.py` | FastMCP server + MCP tools |
+| `src/google_ai_mcp/web.py` | FastAPI REST endpoints |
+| `src/google_ai_mcp/chat_client.py` | Gemini/Gemma chat client |
+| `src/google_ai_mcp/imagen_client.py` | Nano Banana image client |
+| `src/google_ai_mcp/veo_client.py` | Veo video client |
+| `src/google_ai_mcp/lyria_client.py` | Lyria music client |
+| `src/google_ai_mcp/speech_client.py` | TTS + Live speech client |
+| `src/google_ai_mcp/embeddings_client.py` | Text embeddings client |
+| `src/google_ai_mcp/clients_registry.py` | LRU-cached client factory |
+| `start.ps1` | Fleet start script |
+| `justfile` | Task runner |
+| `pyproject.toml` | Python project config |
+| `webapp/` | React frontend |
+| `native/` | Tauri 2.0 desktop wrapper |
+
+## Dependencies
+
+- fastapi >= 0.115.0
+- fastmcp >= 3.2.0
+- google-genai >= 1.20.0
+- google-cloud-aiplatform >= 1.127.0
+- pydantic >= 2.0.0
+
+## MCP Tools
+
+| Tool | Description |
+|---|---|
+| `google_ai_chat` | Text/multimodal chat (Gemini 3.1 Pro, Gemma 4) |
+| `google_ai_image` | Image generation (Nano Banana 2 / Pro) |
+| `google_ai_video` | Video generation (Veo 3.1) |
+| `google_ai_music` | Music generation (Lyria 3) |
+| `google_ai_speech` | Text-to-speech (Gemini TTS, Live) |
+| `google_ai_embeddings` | Text embeddings (gemini-embedding-001) |
+| `google_ai_status` | Service health status |
+| `show_google_ai_status_card` | Prefab UI status card |
