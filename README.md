@@ -1,5 +1,17 @@
 # Google AI MCP
 
+<p align="center">
+  <a href="https://github.com/sandraschi/google-ai-mcp/actions/workflows/ci.yml"><img src="https://github.com/sandraschi/google-ai-mcp/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/PrefectHQ/fastmcp"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/Python-3.12+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
+  <a href="https://biomejs.dev"><img src="https://img.shields.io/badge/Linted_with-Biome-60a5fa?style=flat-square&logo=biome&logoColor=white" alt="Biome"></a>
+  <a href="https://vitejs.dev"><img src="https://img.shields.io/badge/Vite-11015-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite"></a>
+  <a href="https://ai.google.dev"><img src="https://img.shields.io/badge/Google_AI-Gemini_&_Omni-4285F4?style=flat-square&logo=google&logoColor=white" alt="Google AI"></a>
+  <a href="https://www.docker.com"><img src="https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
+  <a href="https://github.com/casey/just"><img src="https://img.shields.io/badge/just-ready_to_go-7c5cfc?style=flat-square&logo=just&logoColor=white" alt="Just"></a>
+</p>
+
 FastMCP 3.2 server for Google AI services — Gemini Chat, Nano Banana image generation, Veo video, **Gemini Omni** any-to-any video, Lyria music, TTS, Gemini Live, and text embeddings.
 
 ## Quick Start
