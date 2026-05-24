@@ -21,6 +21,9 @@ default:
 serve:
     .\start.ps1
 
+kill-zombies:
+    .\scripts\kill-zombies.ps1
+
 dev:
     C:\Users\sandr\.local\bin\uv.exe run python -m google_ai_mcp.server
 

@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"start": "set DISABLE_ESLINT_PLUGIN=true&& set PORT=3001&& react-scripts start",
-		"dev": "vite --port 11015",
+		"dev": "vite --port 11015 --strictPort",
 		"build": "vite build",
 		"build:unix": "CI=false REACT_APP_BUILD_TIME=$(date '+%Y-%m-%d %H:%M:%S') react-scripts build",
 		"test": "react-scripts test",

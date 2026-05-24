@@ -209,7 +209,7 @@ const AppContent = () => {
 						🚀 Google AI MCP
           </Typography>
 
-          {process.env.REACT_APP_BUILD_TIME && (
+          {import.meta.env.REACT_APP_BUILD_TIME && (
             <Typography
               variant="caption"
               sx={{
@@ -218,7 +218,7 @@ const AppContent = () => {
                 display: { xs: "none", sm: "block" },
               }}
             >
-              Built: {process.env.REACT_APP_BUILD_TIME}
+              Built: {import.meta.env.REACT_APP_BUILD_TIME}
             </Typography>
           )}
 

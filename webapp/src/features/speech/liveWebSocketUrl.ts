@@ -1,6 +1,6 @@
 /** WebSocket URL for the FastAPI Gemini Live proxy (`/ws/v1/speech/live`). */
 export function liveWebSocketUrl(): string {
-  const explicit = process.env.REACT_APP_WS_URL?.trim();
+  const explicit = import.meta.env.REACT_APP_WS_URL?.trim();
   if (explicit) {
     const u = explicit.replace(/\/$/, "");
     if (u.startsWith("http://"))
