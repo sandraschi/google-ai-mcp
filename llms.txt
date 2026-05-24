@@ -19,6 +19,7 @@ FastMCP 3.2 MCP server providing access to Google AI services via the Model Cont
 | `src/google_ai_mcp/chat_client.py` | Gemini/Gemma chat client |
 | `src/google_ai_mcp/imagen_client.py` | Nano Banana image client |
 | `src/google_ai_mcp/veo_client.py` | Veo video client |
+| `src/google_ai_mcp/omni_client.py` | Gemini Omni any-to-any multimodal client |
 | `src/google_ai_mcp/lyria_client.py` | Lyria music client |
 | `src/google_ai_mcp/speech_client.py` | TTS + Live speech client |
 | `src/google_ai_mcp/embeddings_client.py` | Text embeddings client |
