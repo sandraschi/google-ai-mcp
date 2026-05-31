@@ -105,8 +105,16 @@ const Speech: React.FC = () => {
         <strong>Gemini 2.5 Pro preview TTS</strong> in the model list.
       </Typography>
       <Alert severity="info" sx={{ mb: 3 }}>
-        For <strong>Gemini Live</strong> (streaming session), open the{" "}
-        <RouterLink to="/live">Gemini Live</RouterLink> page.
+        Streaming Live, STT, and advanced voice tooling are in{" "}
+        <a
+          href="https://github.com/sandraschi/speech-mcp"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          speech-mcp
+        </a>
+        . This page is one-shot TTS only. See also{" "}
+        <RouterLink to="/live">Gemini Live</RouterLink> for the fleet split.
       </Alert>
 
       <Grid container spacing={3}>

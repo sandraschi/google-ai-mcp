@@ -83,13 +83,13 @@ const AppContent = () => {
       text: "Speech",
       icon: <MicIcon />,
       path: "/speech",
-      description: "Gemini TTS (text-to-speech)",
+      description: "One-shot Gemini TTS (see speech-mcp for Live)",
     },
     {
       text: "Gemini Live",
       icon: <LiveIcon />,
       path: "/live",
-      description: "Streaming Live API (WebSocket)",
+      description: "Live sessions → speech-mcp",
     },
     {
       text: "Image Generation",

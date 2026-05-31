@@ -15,6 +15,7 @@ default:
     @Write-Host "  clean          Remove build artifacts"
     @Write-Host "  ci             Full CI pipeline (build, check, test)"
     @Write-Host "  build-native   Build Tauri 2.0 desktop installer"
+    @Write-Host "  mcpb-pack      Build Claude Desktop .mcpb bundle"
     @Write-Host ""
 
 # ── Development ──
@@ -61,10 +62,20 @@ build-native:
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
     .\build.ps1
 
+build-sidecar:
+    pwsh -NoLogo -File '{{justfile_directory()}}\native\build-sidecar.ps1'
+
 build-native-debug:
     Set-Location '{{justfile_directory()}}\native'
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
     npx @tauri-apps/cli build --debug
+
+# ── MCPB ──
+mcpb-pack:
+    Set-Location '{{justfile_directory()}}'
+    C:\Users\sandr\.local\bin\uv.exe run python build_mcpb.py
+
+package: mcpb-pack
 
 # ── Housekeeping ──
 clean:

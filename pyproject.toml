@@ -15,12 +15,13 @@ dependencies = [
     "python-multipart>=0.0.20",
     "aiofiles>=24.0.0",
     "Pillow>=10.0.0",
+    "httpx>=0.28.0",
     "structlog>=24.0.0",
 ]
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-asyncio", "pytest-cov", "httpx"]
-dev = ["ruff", "mypy"]
+dev = ["ruff", "mypy", "pyinstaller>=6.0"]
 
 [project.scripts]
 google-ai-mcp = "google_ai_mcp.server:main"

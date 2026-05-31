@@ -14,12 +14,11 @@ FastMCP 3.2 MCP server providing access to Google AI services via the Model Cont
 
 | File | Purpose |
 |---|---|
-| `src/google_ai_mcp/server.py` | FastMCP server + MCP tools |
+| `src/google_ai_mcp/server.py` | FastMCP server + 9 MCP tools |
 | `src/google_ai_mcp/web.py` | FastAPI REST endpoints |
 | `src/google_ai_mcp/chat_client.py` | Gemini/Gemma chat client |
 | `src/google_ai_mcp/imagen_client.py` | Nano Banana image client |
 | `src/google_ai_mcp/veo_client.py` | Veo video client |
-| `src/google_ai_mcp/omni_client.py` | Gemini Omni any-to-any multimodal client |
 | `src/google_ai_mcp/lyria_client.py` | Lyria music client |
 | `src/google_ai_mcp/speech_client.py` | TTS + Live speech client |
 | `src/google_ai_mcp/embeddings_client.py` | Text embeddings client |
@@ -28,6 +27,8 @@ FastMCP 3.2 MCP server providing access to Google AI services via the Model Cont
 | `justfile` | Task runner |
 | `pyproject.toml` | Python project config |
 | `webapp/` | React frontend |
+| `webapp/e2e/` | Playwright E2E tests (9 tests) |
+| `tests/` | pytest backend tests (17 tests) |
 | `native/` | Tauri 2.0 desktop wrapper |
 
 ## Dependencies
@@ -37,3 +38,32 @@ FastMCP 3.2 MCP server providing access to Google AI services via the Model Cont
 - google-genai >= 1.20.0
 - google-cloud-aiplatform >= 1.127.0
 - pydantic >= 2.0.0
+- structlog >= 24.0.0
+
+## MCP Tools
+
+| Tool | Operations |
+|---|---|
+| `google_ai_chat` | chat, list_models |
+| `google_ai_image` | generate, list_models |
+| `google_ai_video` | generate, list_models |
+| `google_ai_music` | generate, list_models |
+| `google_ai_speech` | tts, list_voices, list_models |
+| `google_ai_embeddings` | embed, list_models |
+| `google_ai_status` | Health check all services |
+| `google_ai_world` | health, train_prepare, infer_prepare |
+| `show_google_ai_status_card` | Prefab UI card |
+
+## E2E Audit
+
+```powershell
+just e2e   # fleet-wide headless auditor, 0 clicks required
+```
+Runs: clear zombies → start servers → verify deps → 9 E2E tests → console probe → API health check
+
+## Ports
+
+| Service | Port |
+|---|---|
+| Backend | 11014 |
+| Frontend | 11015 |

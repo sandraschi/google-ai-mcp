@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   envPrefix: ['VITE_', 'REACT_APP_'],
   server: {
+    allowedHosts: ['goliath'],
     port: 11015,
     strictPort: true,
     host: true,

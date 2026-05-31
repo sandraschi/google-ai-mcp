@@ -1,0 +1,27 @@
+[
+  {
+    "tool": "google_ai_status",
+    "args": {},
+    "description": "Check which Google AI services are live vs mock"
+  },
+  {
+    "tool": "google_ai_chat",
+    "args": { "prompt": "Explain MCP in one paragraph" },
+    "description": "Simple Gemini chat"
+  },
+  {
+    "tool": "google_ai_image",
+    "args": { "prompt": "Minimal flat icon of a robot", "operation": "generate" },
+    "description": "Generate an image with Imagen/Nano Banana"
+  },
+  {
+    "tool": "google_ai_speech",
+    "args": { "text": "Hello world", "operation": "tts" },
+    "description": "One-shot TTS — not Live streaming"
+  },
+  {
+    "tool": "google_ai_omni",
+    "args": { "prompt": "Describe this scene", "operation": "generate" },
+    "description": "Omni multimodal generation"
+  }
+]

@@ -1,32 +1,43 @@
+#!/usr/bin/env pwsh
+$ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
-$RepoName = Split-Path -Leaf $Root
-$BackendPath = "$PSScriptRoot\binaries"
-$TargetTriple = "x86_64-pc-windows-msvc"
+$IconSrc = "$Root\assets\icon.png"
 
-# Step 1: Build React frontend
+Write-Host "== google-ai-mcp Tauri Release Build ==" -ForegroundColor Cyan
+
+if (-not (Test-Path "$PSScriptRoot\icons\icon.ico")) {
+    if (-not (Test-Path $IconSrc)) {
+        throw "Missing assets/icon.png — required for Tauri icon generation."
+    }
+    Push-Location $PSScriptRoot
+    try {
+        npx @tauri-apps/cli icon $IconSrc
+    } finally {
+        Pop-Location
+    }
+}
+
+Write-Host "-> [1/3] Building webapp..." -ForegroundColor Yellow
 Push-Location "$Root\webapp"
-npm install
-npm run build
-Pop-Location
+try {
+    npm install
+    npm run build
+} finally {
+    Pop-Location
+}
 
-# Step 2: Build Python backend as standalone .exe
-Push-Location "$Root"
-& "C:\Users\sandr\.local\bin\uv.exe" run python -m PyInstaller `
-    --onedir -y --clean `
-    --name "${RepoName}-backend" `
-    --add-data "src/google_ai_mcp;google_ai_mcp" `
-    --copy-metadata fastmcp --copy-metadata fastapi `
-    --hidden-import uvicorn.logging `
-    --hidden-import google.genai `
-    run_server.py
-Pop-Location
+Write-Host "-> [2/3] Building PyInstaller sidecar..." -ForegroundColor Yellow
+pwsh -NoLogo -File "$Root\native\build-sidecar.ps1"
 
-# Step 3: Copy sidecar binary for Tauri
-New-Item -ItemType Directory -Force -Path $BackendPath
-Copy-Item "$Root\dist\${RepoName}-backend\${RepoName}-backend.exe" `
-    "$BackendPath\${RepoName}-backend-${TargetTriple}.exe" -Force
-
-# Step 4: Build Tauri bundle
+Write-Host "-> [3/3] Building Tauri app..." -ForegroundColor Yellow
 Push-Location $PSScriptRoot
-npx @tauri-apps/cli build
-Pop-Location
+try {
+    $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
+    npx @tauri-apps/cli build
+} finally {
+    Pop-Location
+}
+
+$installer = "$Root\native\target\release\bundle\nsis\Google AI MCP_0.1.0_x64-setup.exe"
+Write-Host "== Build complete ==" -ForegroundColor Green
+Write-Host "Installer: $installer" -ForegroundColor Cyan

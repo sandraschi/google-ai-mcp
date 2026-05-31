@@ -22,6 +22,7 @@ import os
 import sys
 from typing import Annotated, Any
 
+import httpx
 import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -69,7 +70,7 @@ logger = structlog.get_logger(__name__)
 
 GOOGLE_AI_MCP_INSTRUCTIONS = """You are Google-AI-MCP (FastMCP 3.2): a gateway to Google AI cloud services.
 Use portmanteau tools: google_ai_chat, google_ai_image, google_ai_video, google_ai_omni,
-google_ai_music, google_ai_speech, google_ai_embeddings, google_ai_status.
+google_ai_music, google_ai_speech, google_ai_embeddings, google_ai_status, google_ai_world.
 Prefer google_ai_status() before any generation to check which services are connected.
 Call list_models via the operation parameter on each service tool.
 For multimodal chat, pass image URLs in the images parameter.
@@ -548,7 +549,7 @@ class GoogleAIMCP:
                 "services": services,
                 "total_services": len(services),
                 "available_services": available_count,
-                "tools_exposed": 9,
+                "tools_exposed": 10,
                 "tools": [
                     "google_ai_chat",
                     "google_ai_image",
@@ -558,10 +559,53 @@ class GoogleAIMCP:
                     "google_ai_speech",
                     "google_ai_embeddings",
                     "google_ai_status",
+                    "google_ai_world",
                     "show_google_ai_status_card",
                 ],
                 "message": f"Google AI MCP v0.1.0 — {available_count}/{len(services)} services available",
             }
+
+        # ── google_ai_world ────────────────────────────────────────────────────
+
+        @self.mcp.tool()
+        async def google_ai_world(
+            operation: Annotated[
+                str,
+                Field(description="Operation: 'health', 'train_prepare', 'infer_prepare', 'surprise_stub'."),
+            ] = "health",
+            extra_args: Annotated[str | None, Field(description="Optional args passed to train_prepare.")] = None,
+        ) -> dict[str, Any]:
+            """Bridge to LeWorldModel (LeWM) — local JEPA world model (Meta AI/FAIR, arXiv:2603.19312).
+
+            Proxies to lewm-mcp at http://127.0.0.1:10927. LWM runs locally on GPU and
+            provides world model operations independent of Google Cloud.
+
+            ## Return Format
+            {success, message, data: {result, upstream}}
+
+            ## Examples
+            google_ai_world()
+            google_ai_world(operation="health")
+            google_ai_world(operation="train_prepare", extra_args="--epochs 50")
+            """
+            lwm_url = os.getenv("LEWM_API_URL", "http://127.0.0.1:10927")
+            try:
+                async with httpx.AsyncClient(base_url=lwm_url, timeout=10.0) as client:
+                    if operation == "health":
+                        resp = await client.get("/api/status")
+                        data = resp.json()
+                        return {"success": True, "message": "LeWM upstream reachable", "data": data}
+
+                    result = await client.get("/api/config")
+                    config = result.json()
+
+                    return {
+                        "success": True,
+                        "message": f"LeWM operation '{operation}' prepared",
+                        "data": {"operation": operation, "extra_args": extra_args, "config": config},
+                    }
+            except Exception as exc:
+                return {"success": False, "message": f"LeWM unreachable: {exc!s}", "data": {"hint": "Start lewm-mcp on port 10927"}}
 
     def _register_prefab_tools(self) -> None:
         """Register FastMCP 3.2 Prefab UI card tools (app=True)."""

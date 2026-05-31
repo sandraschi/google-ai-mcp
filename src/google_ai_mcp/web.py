@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 
+import httpx
 from fastapi import FastAPI, Request
 from fastmcp import FastMCP
 
@@ -219,6 +220,17 @@ def setup_routes(app: FastAPI, mcp: FastMCP) -> None:
                 os.environ["GOOGLE_CLOUD_PROJECT"] = proj
             refresh_cached_clients()
         return {"success": True, "message": "Settings saved"}
+
+    # ── LeWorldModel bridge ────────────────────────────────────────────────────
+
+    @app.get("/api/v1/world/status")
+    async def world_status():
+        try:
+            async with httpx.AsyncClient(base_url="http://127.0.0.1:10927", timeout=5.0) as c:
+                r = await c.get("/api/status")
+                return {"reachable": True, "data": r.json()}
+        except Exception:
+            return {"reachable": False, "message": "LeWM not running on 10927"}
 
     from google_ai_mcp.compat_routes import setup_compat_routes
 

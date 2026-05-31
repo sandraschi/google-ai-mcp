@@ -1,0 +1,23 @@
+# MCPB pack exclusions
+tests/
+.git/
+.github/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+webapp/
+native/
+dist/
+build/
+target/
+docs/
+scripts/
+.cursor/
+.pytest_cache/
+.ruff_cache/
+glama.json
+llms.txt
+llms-full.txt
+docker-compose.yml
+Dockerfile*
