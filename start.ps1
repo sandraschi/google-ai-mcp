@@ -27,6 +27,8 @@ if (-not (Test-Path -LiteralPath $FleetStartPath)) {
 . $FleetStartPath
 Stop-FleetPortSquatters -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp"
 
+if (-not (Assert-FleetPortsAvailable -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp")) { exit 1 }
+
 if (-not $FrontendOnly) {
     Write-Host ('[backend] Starting uvicorn on :{0} ...' -f $BackendPort) -ForegroundColor Yellow
     $backendProc = Start-Process -FilePath $UV `
@@ -112,5 +114,9 @@ try {
     try { Stop-Process -Id $frontendProc.Id -Force -ErrorAction SilentlyContinue } catch {}
     . $FleetStartPath
 Stop-FleetPortSquatters -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp"
+
+if (-not (Assert-FleetPortsAvailable -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp")) { exit 1 }
+
 }
+
 
