@@ -1,4 +1,4 @@
-Param([switch]$Headless, [switch]$BackendOnly, [switch]$FrontendOnly, [switch]$NoBrowser)
+﻿Param([switch]$Headless, [switch]$BackendOnly, [switch]$FrontendOnly, [switch]$NoBrowser)
 
 # --- SOTA Headless Standard 2026 ---
 if ($Headless -and ($Host.Name -ne 'ConsoleHost' -or -not (Get-Variable -Name 'NoRelaunch' -ErrorAction SilentlyContinue))) {
@@ -19,7 +19,13 @@ $BackendPort = 11014
 
 Write-Host '=== Google AI MCP ===' -ForegroundColor Cyan
 
-& (Join-Path $Repo 'scripts\kill-zombies.ps1') -WebPort $WebPort -BackendPort $BackendPort
+$FleetStartPath = Join-Path $Repo "scripts\FleetStartMode.ps1"
+if (-not (Test-Path -LiteralPath $FleetStartPath)) {
+    Write-Host "ERROR: Missing vendored launcher helper: $FleetStartPath" -ForegroundColor Red
+    exit 1
+}
+. $FleetStartPath
+Stop-FleetPortSquatters -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp"
 
 if (-not $FrontendOnly) {
     Write-Host ('[backend] Starting uvicorn on :{0} ...' -f $BackendPort) -ForegroundColor Yellow
@@ -104,5 +110,7 @@ try {
     Write-Host 'Stopping...' -ForegroundColor Yellow
     try { Stop-Process -Id $backendProc.Id  -Force -ErrorAction SilentlyContinue } catch {}
     try { Stop-Process -Id $frontendProc.Id -Force -ErrorAction SilentlyContinue } catch {}
-    & (Join-Path $Repo 'scripts\kill-zombies.ps1') -WebPort $WebPort -BackendPort $BackendPort
+    . $FleetStartPath
+Stop-FleetPortSquatters -Ports @($WebPort, $BackendPort) -Label "google-ai-mcp"
 }
+
