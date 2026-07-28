@@ -1,0 +1,19 @@
+{
+  "product_name": "Google AI MCP",
+  "install_dir": "%LOCALAPPDATA%\\Google AI MCP",
+  "operator_exe": "google-ai-mcp-native.exe",
+  "backend_process_names": ["google-ai-mcp-native", "google-ai-mcp-backend"],
+  "backend_port": 11014,
+  "health_path": "/health",
+  "diagnostics_path": "/api/v1/diagnostics",
+  "feature_smoke_path": "/api/health",
+  "window_title_re": "Google AI MCP",
+  "nsis_glob": "native/target/release/bundle/nsis/Google AI MCP_*_x64-setup.exe",
+  "bridge_ok_text": "Google AI",
+  "uninstall_registry_filter": "*Google*AI*MCP*",
+  "nav_routes": [["Dashboard","Dashboard"],["Chat","Chat"],["Settings","Settings"],["Help","Help"]],
+  "sidebar_click_x": 30,
+  "sidebar_first_y": 90,
+  "sidebar_step_y": 55,
+  "log_file_paths": ["%LOCALAPPDATA%\\Google AI MCP\\google-ai-mcp.log"]
+}

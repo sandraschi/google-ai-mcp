@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface VideoGenerationRequest {
   prompt: string;
@@ -80,7 +81,7 @@ const VideoGenerator: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/v1/generate", {
+      const response = await fetch(API_BASE + "/api/v1/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,7 +144,7 @@ const VideoGenerator: React.FC = () => {
 
     try {
       const response = await fetch(
-        `/api/v1/video/${generationStatus.generation_id}`,
+        `${API_BASE}/api/v1/video/${generationStatus.generation_id}`,
       );
       if (response.ok) {
         const blob = await response.blob();

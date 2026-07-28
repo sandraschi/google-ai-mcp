@@ -1,0 +1,159 @@
+=== google-ai-mcp sidecar build ===
+-> Installing PyInstaller...
+Resolved 7 packages in 44ms
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 5 packages in 2.01s
+ + altgraph==0.17.5
+ + pefile==2024.8.26
+ + pyinstaller==6.20.0
+ + pyinstaller-hooks-contrib==2026.5
+ + setuptools==82.0.1
+-> Running PyInstaller...
+1237 INFO: PyInstaller: 6.20.0, contrib hooks: 2026.5
+1238 INFO: Python: 3.13.5
+1350 INFO: Platform: Windows-11-10.0.29599-SP0
+1350 INFO: Python environment: D:\Dev\repos\google-ai-mcp\.venv
+1371 INFO: Removing temporary files and cleaning cache in C:\Users\sandr\AppData\Local\pyinstaller
+1377 INFO: Module search paths (PYTHONPATH):
+['D:\\Dev\\repos\\google-ai-mcp\\.venv\\Scripts\\pyinstaller.exe',
+ 'C:\\Users\\sandr\\AppData\\Roaming\\uv\\python\\cpython-3.13.5-windows-x86_64-none\\python313.zip',
+ 'C:\\Users\\sandr\\AppData\\Roaming\\uv\\python\\cpython-3.13.5-windows-x86_64-none\\DLLs',
+ 'C:\\Users\\sandr\\AppData\\Roaming\\uv\\python\\cpython-3.13.5-windows-x86_64-none\\Lib',
+ 'C:\\Users\\sandr\\AppData\\Roaming\\uv\\python\\cpython-3.13.5-windows-x86_64-none',
+ 'D:\\Dev\\repos\\google-ai-mcp\\.venv',
+ 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages',
+ 'D:\\Dev\\repos\\google-ai-mcp\\src',
+ 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\win32',
+ 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\win32\\lib',
+ 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\Pythonwin',
+ 'D:\\Dev\\repos\\google-ai-mcp',
+ 'D:\\Dev\\repos\\google-ai-mcp\\src']
+2025 INFO: Appending 'datas' from .spec
+2030 INFO: checking Analysis
+2031 INFO: Building Analysis because Analysis-00.toc is non existent
+2031 INFO: Looking for Python shared library...
+2031 INFO: Using Python shared library: C:\Users\sandr\AppData\Roaming\uv\python\cpython-3.13.5-windows-x86_64-none\python313.dll
+2031 INFO: Running Analysis Analysis-00.toc
+2031 INFO: Target bytecode optimization level: 0
+2031 INFO: Initializing module dependency graph...
+2033 INFO: Initializing module graph hook caches...
+2074 INFO: Analyzing modules for base_library.zip ...
+4637 INFO: Processing standard module hook 'hook-encodings.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+5963 INFO: Processing standard module hook 'hook-heapq.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+8591 INFO: Processing standard module hook 'hook-pickle.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+12589 INFO: Caching module dependency graph...
+12653 INFO: Analyzing D:\Dev\repos\google-ai-mcp\run_server.py
+14000 INFO: Processing standard module hook 'hook-certifi.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+14426 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+14619 INFO: Processing standard module hook 'hook-xml.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+15227 INFO: Processing standard module hook 'hook-_ctypes.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+16374 INFO: Processing standard module hook 'hook-anyio.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+17303 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+17328 INFO: SetuptoolsInfo: initializing cached setuptools info...
+20944 INFO: Processing standard module hook 'hook-platform.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+21201 INFO: Processing standard module hook 'hook-difflib.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+21617 INFO: Processing standard module hook 'hook-pygments.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+23871 INFO: Processing standard module hook 'hook-rich.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+26585 INFO: Processing standard module hook 'hook-sysconfig.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+27651 INFO: Processing standard module hook 'hook-pydantic.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+29084 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+29927 INFO: Processing standard module hook 'hook-dns.rdata.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+31179 INFO: Processing standard module hook 'hook-pythoncom.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+31338 INFO: Processing standard module hook 'hook-pywintypes.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+33264 INFO: Processing pre-safe-import-module hook 'hook-platformdirs.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+33285 INFO: Processing standard module hook 'hook-platformdirs.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+33809 INFO: Processing standard module hook 'hook-cryptography.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+36073 INFO: hook-cryptography: cryptography does not seem to be using dynamically linked OpenSSL.
+37165 INFO: Processing standard module hook 'hook-urllib3.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+37323 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+37334 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+37344 INFO: Processing standard module hook 'hook-setuptools.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+37371 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+37423 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+37427 INFO: Setuptools: 'jaraco' appears to be a partial setuptools-vendored copy - extending search paths to ['D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\jaraco', 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\setuptools\\_vendor\\jaraco']!
+37427 INFO: Processing pre-safe-import-module hook 'hook-jaraco.functools.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+37458 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+37825 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38170 INFO: Processing pre-safe-import-module hook 'hook-jaraco.text.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38175 INFO: Setuptools: 'jaraco.text' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco.text'!
+38234 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+38249 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38255 INFO: Processing pre-safe-import-module hook 'hook-jaraco.context.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38559 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38562 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
+38604 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+38676 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+38679 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
+39061 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+39064 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+40179 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+40183 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+40797 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+41338 INFO: Processing standard module hook 'hook-pycparser.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+44084 INFO: Processing standard module hook 'hook-jsonschema.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+44381 INFO: Processing standard module hook 'hook-jsonschema_specifications.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+45251 INFO: Processing standard module hook 'hook-uvicorn.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+46792 INFO: Processing standard module hook 'hook-websockets.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+50674 INFO: Processing standard module hook 'hook-opentelemetry.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+56958 INFO: Processing standard module hook 'hook-PIL.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+57133 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+57939 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+58215 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+60092 INFO: Processing standard module hook 'hook-google.api_core.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+60183 INFO: Processing standard module hook 'hook-grpc.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107712 INFO: Processing standard module hook 'hook-google.cloud.storage.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+108974 INFO: Processing standard module hook 'hook-google.cloud.bigquery.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+109273 INFO: Processing standard module hook 'hook-dateutil.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112108 INFO: Processing pre-safe-import-module hook 'hook-tensorflow.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\pre_safe_import_module'
+115954 INFO: Analyzing hidden import 'uvicorn.loops'
+115955 INFO: Analyzing hidden import 'uvicorn.loops.asyncio'
+115956 INFO: Analyzing hidden import 'uvicorn.lifespan'
+115957 INFO: Analyzing hidden import 'uvicorn.lifespan.on'
+115964 INFO: Processing module hooks (post-graph stage)...
+116489 WARNING: Hidden import "pycparser.lextab" not found!
+116489 WARNING: Hidden import "pycparser.yacctab" not found!
+121291 WARNING: Hidden import "tzdata" not found!
+121763 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+124857 INFO: Performing binary vs. data reclassification (162 entries)
+124945 INFO: Looking for ctypes DLLs
+125070 INFO: Analyzing run-time hooks ...
+125096 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+125110 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+125126 INFO: Including run-time hook 'pyi_rth_cryptography_openssl.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+125138 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+125152 INFO: Including run-time hook 'pyi_rth_pythoncom.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+125162 INFO: Including run-time hook 'pyi_rth_pywintypes.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+125165 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+125286 INFO: Creating base_library.zip...
+125320 INFO: Looking for dynamic libraries
+D:\Dev\repos\google-ai-mcp\.venv\Lib\site-packages\PyInstaller\building\build_main.py:227: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  __import__(package)
+136372 INFO: Extra DLL search directories (AddDllDirectory): ['D:\\Dev\\repos\\google-ai-mcp\\.venv\\Lib\\site-packages\\google_crc32c\\extra-dll']
+136373 INFO: Extra DLL search directories (PATH): []
+138435 INFO: Warnings written to D:\Dev\repos\google-ai-mcp\build\google-ai-mcp-backend\warn-google-ai-mcp-backend.txt
+139235 INFO: Graph cross-reference written to D:\Dev\repos\google-ai-mcp\build\google-ai-mcp-backend\xref-google-ai-mcp-backend.html
+139445 INFO: checking PYZ
+139445 INFO: Building PYZ because PYZ-00.toc is non existent
+139445 INFO: Building PYZ (ZlibArchive) D:\Dev\repos\google-ai-mcp\build\google-ai-mcp-backend\PYZ-00.pyz
+143775 INFO: Building PYZ (ZlibArchive) D:\Dev\repos\google-ai-mcp\build\google-ai-mcp-backend\PYZ-00.pyz completed successfully.
+143955 INFO: checking PKG
+143955 INFO: Building PKG because PKG-00.toc is non existent
+143955 INFO: Building PKG (CArchive) google-ai-mcp-backend.pkg
+152376 INFO: Building PKG (CArchive) google-ai-mcp-backend.pkg completed successfully.
+152384 INFO: Bootloader D:\Dev\repos\google-ai-mcp\.venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\run.exe
+152385 INFO: checking EXE
+152385 INFO: Building EXE because EXE-00.toc is non existent
+152385 INFO: Building EXE from EXE-00.toc
+152385 INFO: Copying bootloader EXE to D:\Dev\repos\google-ai-mcp\dist\google-ai-mcp-backend.exe
+152483 INFO: Copying icon to EXE
+152535 INFO: Copying 0 resources to EXE
+152535 INFO: Embedding manifest in EXE
+152580 INFO: Appending PKG archive to EXE
+152822 INFO: Fixing EXE headers
+153333 INFO: Building EXE from EXE-00.toc completed successfully.
+153344 INFO: Build complete! The results are available in: D:\Dev\repos\google-ai-mcp\dist
+=== Sidecar ready ===
+  D:\Dev\repos\google-ai-mcp\native\binaries\google-ai-mcp-backend-x86_64-pc-windows-msvc.exe (56.8 MB)

@@ -1,4 +1,5 @@
 """FastAPI REST endpoints for Google AI MCP webapp."""
+
 from __future__ import annotations
 
 import json

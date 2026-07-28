@@ -29,6 +29,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { API_BASE } from "../../lib/api";
 import type React from "react";
 import { useEffect, useState } from "react";
 
@@ -89,7 +90,7 @@ const RomanceNovelGenerator: React.FC = () => {
   const loadTropes = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/v1/romance/tropes");
+      const response = await fetch(API_BASE + "/api/v1/romance/tropes");
       if (response.ok) {
         const data = await response.json();
         setTropes(data);
@@ -115,7 +116,7 @@ const RomanceNovelGenerator: React.FC = () => {
       setGenerating(true);
       setError(null);
 
-      const response = await fetch("/api/v1/romance/generate", {
+      const response = await fetch(API_BASE + "/api/v1/romance/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -156,7 +157,7 @@ const RomanceNovelGenerator: React.FC = () => {
   const pollNovelStatus = async (novelId: string) => {
     const poll = async () => {
       try {
-        const response = await fetch(`/api/v1/romance/${novelId}/status`);
+        const response = await fetch(`${API_BASE}/api/v1/romance/${novelId}/status`);
         if (response.ok) {
           const status = await response.json();
           setCurrentNovel(status);

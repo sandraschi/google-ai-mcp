@@ -28,6 +28,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface MusicGenerationRequest {
   prompt: string;
@@ -131,7 +132,7 @@ const MusicGenerator: React.FC = () => {
     setAudioUrl(null);
 
     try {
-      const response = await fetch("/api/v1/music/generate", {
+      const response = await fetch(API_BASE + "/api/v1/music/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -174,7 +175,7 @@ const MusicGenerator: React.FC = () => {
   const pollStatus = async (generationId: string) => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/v1/music/status/${generationId}`);
+        const response = await fetch(`${API_BASE}/api/v1/music/status/${generationId}`);
         if (response.ok) {
           const status: MusicGenerationStatus & {
             mock_mode?: boolean;
@@ -225,7 +226,7 @@ const MusicGenerator: React.FC = () => {
 
     try {
       const response = await fetch(
-        `/api/v1/music/download/${generationStatus.generation_id}`,
+        `${API_BASE}/api/v1/music/download/${generationStatus.generation_id}`,
       );
       if (response.ok) {
         const blob = await response.blob();

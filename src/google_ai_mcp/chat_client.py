@@ -255,9 +255,7 @@ class ChatClient:
         if persona:
             config.system_instruction = persona
 
-        stream_contents: str | list[Any] = (
-            build_multimodal_contents(prompt, images) if images else prompt
-        )
+        stream_contents: str | list[Any] = build_multimodal_contents(prompt, images) if images else prompt
 
         try:
             async for chunk in await self._client.aio.models.generate_content_stream(

@@ -1,6 +1,7 @@
 import {
   AddPhotoAlternate as AddPhotoIcon,
   ContentCopy as CopyIcon,
+  Download as DownloadIcon,
   Refresh as RefreshIcon,
   Send as SendIcon,
 } from "@mui/icons-material";
@@ -26,7 +27,12 @@ import {
   Typography,
 } from "@mui/material";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { API_BASE } from "../../lib/api";
+
+const LS_HISTORY = "google-ai-chat-history";
+const LS_PERSONALITY = "google-ai-chat-personality";
+const MAX_HISTORY = 100;
 
 interface ImageAttachment {
   id: string;
@@ -104,12 +110,20 @@ const personas: Persona[] = [
 ];
 
 const ChatInterface: React.FC = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try { const s = localStorage.getItem(LS_HISTORY); if (s) { const parsed = JSON.parse(s); return Array.isArray(parsed) ? parsed : []; } } catch { /* ignore */ }
+    return [];
+  });
   const [input, setInput] = useState("");
-  const [selectedPersona, setSelectedPersona] = useState<Persona>(personas[0]);
+  const [selectedPersona, setSelectedPersona] = useState<Persona>(() => {
+    const saved = localStorage.getItem(LS_PERSONALITY);
+    if (saved) { const found = personas.find(p => p.id === saved); if (found) return found; }
+    return personas[0];
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [backendOk, setBackendOk] = useState<boolean | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageAttachments, setImageAttachments] = useState<ImageAttachment[]>(
@@ -131,11 +145,25 @@ const ChatInterface: React.FC = () => {
 
   const [selectedModel, setSelectedModel] = useState("gemini-3.1-pro-preview");
 
+  // Persist messages and personality
+  useEffect(() => {
+    try { localStorage.setItem(LS_HISTORY, JSON.stringify(messages.slice(-MAX_HISTORY))); } catch { /* ignore */ }
+  }, [messages]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_PERSONALITY, selectedPersona.id);
+  }, [selectedPersona]);
+
+  // Backend health
+  useEffect(() => {
+    fetch(API_BASE + "/api/health").then(r => setBackendOk(r.ok)).catch(() => setBackendOk(false));
+  }, []);
+
   // Fetch available models from API
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const response = await fetch("/api/v1/chat/models");
+        const response = await fetch(API_BASE + "/api/v1/chat/models");
         if (response.ok) {
           const data = await response.json();
           if (data.models && Array.isArray(data.models)) {
@@ -273,7 +301,7 @@ const ChatInterface: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("/api/v1/chat", {
+      const response = await fetch(API_BASE + "/api/v1/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -346,7 +374,16 @@ const ChatInterface: React.FC = () => {
     setMessages([]);
     setError(null);
     setImageAttachments([]);
+    try { localStorage.removeItem(LS_HISTORY); } catch { /* ignore */ }
   };
+
+  const handleExport = useCallback(() => {
+    const text = messages.map(m => `[${m.sender.toUpperCase()}] ${m.content}`).join("\n\n---\n\n");
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = `google-ai-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click(); URL.revokeObjectURL(url);
+  }, [messages]);
 
   return (
     <Box
@@ -358,13 +395,27 @@ const ChatInterface: React.FC = () => {
         flexDirection: "column",
       }}
     >
-      <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-        💬 Chat & Text Generation
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography variant="h4">
+          💬 Chat & Text Generation
+        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Chip label="skill:google-ai" size="small" variant="outlined" sx={{ fontSize: "0.7rem" }} />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: backendOk === true ? "#4caf50" : backendOk === false ? "#f44336" : "#9e9e9e" }} />
+            <Typography variant="caption" color="text.secondary">
+              {backendOk === true ? "Online" : backendOk === false ? "Offline" : "Checking..."}
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={handleExport} disabled={messages.length === 0} data-testid="chat-export" title="Export chat">
+            <DownloadIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      </Box>
 
       <Grid container spacing={3} sx={{ flex: 1, minHeight: 0 }}>
         {/* Settings Panel */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} data-testid="chat-settings">
           <Card elevation={2}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -374,7 +425,8 @@ const ChatInterface: React.FC = () => {
               <Stack spacing={3}>
                 <FormControl fullWidth>
                   <InputLabel>AI Model</InputLabel>
-                  <Select
+                    <Select
+                    data-testid="model-select"
                     value={selectedModel}
                     label="AI Model"
                     onChange={(e) => setSelectedModel(e.target.value)}
@@ -400,7 +452,7 @@ const ChatInterface: React.FC = () => {
                   >
                     Persona
                   </Typography>
-                  <Grid container spacing={1}>
+                  <Grid container spacing={1} data-testid="personality-select">
                     {personas.map((persona) => (
                       <Grid item xs={6} key={persona.id}>
                         <Card
@@ -438,6 +490,7 @@ const ChatInterface: React.FC = () => {
                 </Box>
 
                 <Button
+                  data-testid="chat-clear"
                   variant="outlined"
                   startIcon={<RefreshIcon />}
                   onClick={handleClearChat}
@@ -508,6 +561,7 @@ const ChatInterface: React.FC = () => {
               )}
               {/* Messages */}
               <Box
+                data-testid="chat-messages"
                 sx={{
                   flex: 1,
                   overflowY: "auto",
@@ -699,6 +753,7 @@ const ChatInterface: React.FC = () => {
                     <AddPhotoIcon />
                   </IconButton>
                   <TextField
+                    data-testid="chat-input"
                     fullWidth
                     multiline
                     maxRows={4}
@@ -714,6 +769,7 @@ const ChatInterface: React.FC = () => {
                     }}
                   />
                   <Button
+                    data-testid="chat-send"
                     variant="contained"
                     onClick={handleSendMessage}
                     disabled={

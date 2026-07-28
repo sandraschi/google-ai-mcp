@@ -22,6 +22,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface OmniOutput {
   url: string;
@@ -58,7 +59,7 @@ const OmniGenerator: React.FC = () => {
     setInfoMessage(null);
 
     try {
-      const response = await fetch("/api/v1/omni/generate", {
+      const response = await fetch(API_BASE + "/api/v1/omni/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

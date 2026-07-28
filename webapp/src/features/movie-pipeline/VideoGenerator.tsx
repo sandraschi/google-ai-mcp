@@ -26,6 +26,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 // Video generation styles
 const videoStyles = [
@@ -97,7 +98,7 @@ const VideoGenerator: React.FC = () => {
     const interval = setInterval(async () => {
       try {
         const response = await fetch(
-          `/api/video/status/${generationStatus.id}`,
+          `${API_BASE}/api/video/status/${generationStatus.id}`,
         );
         if (!response.ok) throw new Error("Failed to fetch status");
 
@@ -137,7 +138,7 @@ const VideoGenerator: React.FC = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch("/api/video/generate", {
+      const response = await fetch(API_BASE + "/api/video/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

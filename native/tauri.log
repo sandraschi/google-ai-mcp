@@ -1,0 +1,25 @@
+        Info Looking up installed tauri packages to check mismatched versions...
+   Compiling webview2-com-sys v0.38.2
+   Compiling tao v0.35.3
+   Compiling google-ai-mcp-native v0.1.0 (D:\Dev\repos\google-ai-mcp\native)
+   Compiling webview2-com v0.38.2
+   Compiling tauri-runtime v2.11.2
+   Compiling wry v0.55.1
+   Compiling tauri-runtime-wry v2.11.2
+   Compiling tauri v2.11.2
+   Compiling tauri-plugin-shell v2.3.5
+   Compiling tauri-plugin-fs v2.5.1
+   Compiling tauri-plugin-process v2.3.1
+    Finished `release` profile [optimized] target(s) in 2m 01s
+       Built application at: D:\Dev\repos\google-ai-mcp\native\target\release\google-ai-mcp-native.exe
+        Info Patching D:\Dev\repos\google-ai-mcp\native\target\release\google-ai-mcp-native.exe with bundle type information: msi
+        Info Target: x64
+     Running candle for "D:\\Dev\\repos\\google-ai-mcp\\native\\target\\release\\wix\\x64\\main.wxs"
+     Running light to produce D:\Dev\repos\google-ai-mcp\native\target\release\bundle\msi\Google AI MCP_0.1.0_x64_en-US.msi
+        Info Patching D:\Dev\repos\google-ai-mcp\native\target\release\google-ai-mcp-native.exe with bundle type information: nsis
+        Info Target: x64
+     Running makensis to produce D:\Dev\repos\google-ai-mcp\native\target\release\bundle\nsis\Google AI MCP_0.1.0_x64-setup.exe
+    Finished 2 bundles at:
+        D:\Dev\repos\google-ai-mcp\native\target\release\bundle\msi\Google AI MCP_0.1.0_x64_en-US.msi
+        D:\Dev\repos\google-ai-mcp\native\target\release\bundle\nsis\Google AI MCP_0.1.0_x64-setup.exe
+

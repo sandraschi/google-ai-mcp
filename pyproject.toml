@@ -5,7 +5,7 @@ description = "FastMCP 3.2 server for Google AI services — Gemini Chat, Nano B
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",
-    "fastmcp>=3.2.0,<4",
+    "fastmcp>=3.4.4,<4",
     "uvicorn[standard]>=0.38.0",
     "websockets>=15.0.0",
     "pydantic>=2.0.0",
@@ -21,7 +21,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-asyncio", "pytest-cov", "httpx"]
-dev = ["ruff", "mypy", "pyinstaller>=6.0"]
+dev = ["ruff>=0.16.0,<0.17", "mypy", "pyinstaller>=6.0"]
 
 [project.scripts]
 google-ai-mcp = "google_ai_mcp.server:main"

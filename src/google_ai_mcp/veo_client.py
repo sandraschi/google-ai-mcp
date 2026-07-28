@@ -144,16 +144,12 @@ class VeoClient:
                 # Use the Vertex AI PredictionServiceClient for video generation
                 from google.cloud.aiplatform_v1 import PredictionServiceClient
 
-                client = PredictionServiceClient(
-                    client_options={"api_endpoint": f"{self.location}-aiplatform.googleapis.com"}
-                )
+                client = PredictionServiceClient(client_options={"api_endpoint": f"{self.location}-aiplatform.googleapis.com"})
 
                 # Submit prediction request
                 response = client.predict(
                     endpoint=endpoint_name,
-                    instances=[
-                        json_format.ParseDict(inst, aiplatform.types.Value()) for inst in request_payload["instances"]
-                    ],
+                    instances=[json_format.ParseDict(inst, aiplatform.types.Value()) for inst in request_payload["instances"]],
                     parameters=json_format.ParseDict(request_payload["parameters"], aiplatform.types.Value()),
                 )
                 return response
@@ -246,8 +242,7 @@ class VeoClient:
             video_path = output_dir / filename
             # Create a minimal placeholder file
             video_path.write_text(
-                f"Mock video placeholder\nPrompt: {prompt}\nDuration: {duration}s\n"
-                f"Configure GOOGLE_CLOUD_PROJECT for live Veo output.\n"
+                f"Mock video placeholder\nPrompt: {prompt}\nDuration: {duration}s\nConfigure GOOGLE_CLOUD_PROJECT for live Veo output.\n"
             )
             videos.append(
                 {

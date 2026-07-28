@@ -1,4 +1,5 @@
-set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
+import 'scripts/just/fleet.just'
 
 # ── Dashboard (default) ──
 default:
@@ -54,7 +55,7 @@ test:
     C:\Users\sandr\.local\bin\uv.exe run pytest tests/ -q
 
 e2e:
-    pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File "D:\Dev\repos\mcp-central-docs\scripts\playwright-audit.ps1" -RepoPath "{{justfile_directory()}}" -BackendPort 11014 -FrontendPort 11015
+    powershell.exe -NoProfile -NoProfile -ExecutionPolicy Bypass -File "D:\Dev\repos\mcp-central-docs\scripts\playwright-audit.ps1" -RepoPath "{{justfile_directory()}}" -BackendPort 11014 -FrontendPort 11015
 
 # ── Native ──
 build-native:
@@ -63,17 +64,12 @@ build-native:
     .\build.ps1
 
 build-sidecar:
-    pwsh -NoLogo -File '{{justfile_directory()}}\native\build-sidecar.ps1'
+    powershell.exe -NoProfile -File '{{justfile_directory()}}\native\build-sidecar.ps1'
 
 build-native-debug:
     Set-Location '{{justfile_directory()}}\native'
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
     npx @tauri-apps/cli build --debug
-
-# ── MCPB ──
-mcpb-pack:
-    Set-Location '{{justfile_directory()}}'
-    C:\Users\sandr\.local\bin\uv.exe run python build_mcpb.py
 
 package: mcpb-pack
 

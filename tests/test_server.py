@@ -1,4 +1,5 @@
 """Tests for Google AI MCP server — FastAPI endpoints and MCP tool responses."""
+
 from __future__ import annotations
 
 import pytest
@@ -137,6 +138,7 @@ async def test_all_tools_registered():
     data = getattr(result, "content", [{}])[0]
     text = getattr(data, "text", "{}")
     import json
+
     try:
         payload = json.loads(text)
     except (json.JSONDecodeError, TypeError):

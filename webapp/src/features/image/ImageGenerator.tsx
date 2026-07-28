@@ -30,6 +30,7 @@ import {
 } from "@mui/material";
 import type React from "react";
 import { useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface ImageGenerationRequest {
   prompt: string;
@@ -259,7 +260,7 @@ const ImageGenerator: React.FC = () => {
     }
 
     try {
-      const response = await fetch("/api/v1/generate_image", {
+      const response = await fetch(API_BASE + "/api/v1/generate_image", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

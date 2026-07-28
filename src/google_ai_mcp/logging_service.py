@@ -131,24 +131,16 @@ class LoggingService:
         entry = LogEntry(level=level, message=message, source=source, details=details)
         self.add_log(entry)
 
-    def info(
-        self, message: str, source: str = "gemini_tools", details: str | None = None
-    ):
+    def info(self, message: str, source: str = "gemini_tools", details: str | None = None):
         self.log("INFO", message, source, details)
 
-    def warning(
-        self, message: str, source: str = "gemini_tools", details: str | None = None
-    ):
+    def warning(self, message: str, source: str = "gemini_tools", details: str | None = None):
         self.log("WARNING", message, source, details)
 
-    def error(
-        self, message: str, source: str = "gemini_tools", details: str | None = None
-    ):
+    def error(self, message: str, source: str = "gemini_tools", details: str | None = None):
         self.log("ERROR", message, source, details)
 
-    def debug(
-        self, message: str, source: str = "gemini_tools", details: str | None = None
-    ):
+    def debug(self, message: str, source: str = "gemini_tools", details: str | None = None):
         self.log("DEBUG", message, source, details)
 
     def get_logs(
@@ -194,9 +186,7 @@ class LoggingService:
             # Time filter
             if since:
                 try:
-                    entry_time = datetime.fromisoformat(
-                        entry.timestamp.replace("Z", "+00:00")
-                    )
+                    entry_time = datetime.fromisoformat(entry.timestamp.replace("Z", "+00:00"))
                     if entry_time < since:
                         continue
                 except (ValueError, AttributeError):

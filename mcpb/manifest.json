@@ -1,0 +1,55 @@
+{
+  "manifest_version": "0.2",
+  "name": "google-ai-mcp",
+  "version": "0.1.0",
+  "description": "FastMCP 3.2 server for Google AI services — Gemini Chat, Nano Banana image gen, Veo video, Lyria music, TTS, Live, Embeddings",
+  "author": { "name": "sandraschi" },
+  "server": {
+    "type": "python",
+    "entry_point": "run_server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run","--directory","${PWD}","run_server.py"],
+      "env": {
+        "PYTHONPATH": "${PWD}/src",
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  },
+  "tools": [
+    { "name": "generate_video_alias", "description": "generate_video_alias" },
+    { "name": "video_status", "description": "video_status" },
+    { "name": "music_generate_alias", "description": "music_generate_alias" },
+    { "name": "music_status", "description": "music_status" },
+    { "name": "music_download", "description": "music_download" },
+    { "name": "test_connection", "description": "test_connection" },
+    { "name": "movie_refine", "description": "movie_refine" },
+    { "name": "movie_generate", "description": "movie_generate" },
+    { "name": "movie_status", "description": "movie_status" },
+    { "name": "romance_tropes", "description": "romance_tropes" },
+    { "name": "romance_generate", "description": "romance_generate" },
+    { "name": "romance_status", "description": "romance_status" },
+    { "name": "romance_download", "description": "romance_download" },
+    { "name": "show_google_ai_status_card", "description": "show_google_ai_status_card" },
+    { "name": "health", "description": "health" },
+    { "name": "api_status", "description": "api_status" },
+    { "name": "chat", "description": "chat" },
+    { "name": "chat_models", "description": "chat_models" },
+    { "name": "generate_image", "description": "generate_image" },
+    { "name": "image_models", "description": "image_models" },
+    { "name": "generate_video", "description": "generate_video" },
+    { "name": "video_models", "description": "video_models" },
+    { "name": "generate_music", "description": "generate_music" },
+    { "name": "music_models", "description": "music_models" },
+    { "name": "text_to_speech", "description": "text_to_speech" },
+    { "name": "speech_options", "description": "speech_options" },
+    { "name": "omni_generate", "description": "omni_generate" },
+    { "name": "omni_models", "description": "omni_models" },
+    { "name": "omni_status", "description": "omni_status" },
+    { "name": "embeddings", "description": "embeddings" },
+    { "name": "list_all_models", "description": "list_all_models" },
+    { "name": "get_settings", "description": "get_settings" },
+    { "name": "save_settings", "description": "save_settings" },
+    { "name": "world_status", "description": "world_status" }
+  ]
+}
