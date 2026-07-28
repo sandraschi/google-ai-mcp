@@ -145,7 +145,7 @@ class EmbeddingsClient:
     def _mock_embedding(self, text: str, model: str) -> dict[str, Any]:
         import hashlib
 
-        seed = int(hashlib.md5(text.encode()).hexdigest(), 16)  # noqa: S324
+        seed = int(hashlib.md5(text.encode()).hexdigest(), 16)
         dims = 3072
         vec = [((seed + i * 31337) % 1000) / 1000.0 - 0.5 for i in range(dims)]
         return {

@@ -117,7 +117,7 @@ class LoggingService:
         for subscriber in self._subscribers:
             try:
                 subscriber(entry)
-            except Exception:  # noqa: S110
+            except Exception:
                 pass  # Don't let subscriber errors affect logging
 
     def log(
@@ -284,7 +284,7 @@ class GeminiToolsLogHandler(logging.Handler):
             )
 
             self.service.add_log(entry)
-        except Exception:  # noqa: S110
+        except Exception:
             # Don't let logging errors cause issues
             pass
 

@@ -290,7 +290,7 @@ class ChatClient:
             ]
         import hashlib
 
-        idx = int(hashlib.md5(prompt.encode()).hexdigest(), 16) % len(responses)  # noqa: S324
+        idx = int(hashlib.md5(prompt.encode()).hexdigest(), 16) % len(responses)
         out: dict[str, Any] = {
             "success": True,
             "response": responses[idx],
