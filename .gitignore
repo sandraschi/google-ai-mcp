@@ -48,3 +48,7 @@ audit_report_*.txt
 e2e_results.txt
 backend_pid.txt
 webapp/test-results/
+
+# Build logs
+*.log
+
