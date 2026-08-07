@@ -19,10 +19,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { API_BASE } from "../../lib/api";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
+import { API_BASE } from "../../lib/api";
 
 import {
   TTS_LANGUAGE_OPTIONS,
@@ -44,7 +44,7 @@ const Speech: React.FC = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const res = await fetch(API_BASE + "/api/v1/speech/options");
+        const res = await fetch(`${API_BASE}/api/v1/speech/options`);
         if (!res.ok) return;
         const data = await res.json();
         if (data.tts_models) setTtsModels(data.tts_models);
@@ -60,7 +60,7 @@ const Speech: React.FC = () => {
     setTtsError(null);
     setTtsLoading(true);
     try {
-      const res = await fetch(API_BASE + "/api/v1/speech/tts", {
+      const res = await fetch(`${API_BASE}/api/v1/speech/tts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

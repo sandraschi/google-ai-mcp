@@ -29,9 +29,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { API_BASE } from "../../lib/api";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface RomanceTropes {
   hero_types: string[];
@@ -90,7 +90,7 @@ const RomanceNovelGenerator: React.FC = () => {
   const loadTropes = async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_BASE + "/api/v1/romance/tropes");
+      const response = await fetch(`${API_BASE}/api/v1/romance/tropes`);
       if (response.ok) {
         const data = await response.json();
         setTropes(data);
@@ -98,7 +98,7 @@ const RomanceNovelGenerator: React.FC = () => {
         setError("Failed to load romance tropes");
       }
     } catch (err) {
-      setError("Error loading tropes: " + (err as Error).message);
+      setError(`Error loading tropes: ${(err as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -116,7 +116,7 @@ const RomanceNovelGenerator: React.FC = () => {
       setGenerating(true);
       setError(null);
 
-      const response = await fetch(API_BASE + "/api/v1/romance/generate", {
+      const response = await fetch(`${API_BASE}/api/v1/romance/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +148,7 @@ const RomanceNovelGenerator: React.FC = () => {
         setError(errorData.detail || "Failed to start novel generation");
       }
     } catch (err) {
-      setError("Error generating novel: " + (err as Error).message);
+      setError(`Error generating novel: ${(err as Error).message}`);
     } finally {
       setGenerating(false);
     }
@@ -157,7 +157,9 @@ const RomanceNovelGenerator: React.FC = () => {
   const pollNovelStatus = async (novelId: string) => {
     const poll = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/v1/romance/${novelId}/status`);
+        const response = await fetch(
+          `${API_BASE}/api/v1/romance/${novelId}/status`,
+        );
         if (response.ok) {
           const status = await response.json();
           setCurrentNovel(status);
@@ -194,7 +196,7 @@ const RomanceNovelGenerator: React.FC = () => {
         document.body.removeChild(a);
       }
     } catch (err) {
-      setError("Error downloading novel: " + (err as Error).message);
+      setError(`Error downloading novel: ${(err as Error).message}`);
     }
   };
 

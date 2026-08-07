@@ -21,7 +21,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest", "pytest-asyncio", "pytest-cov", "httpx"]
-dev = ["ruff>=0.16.0,<0.17", "mypy", "pyinstaller>=6.0"]
+dev = ["ruff>=0.16.0,<0.17", "mypy", "pyinstaller>=6.0", "pytest>=8.0", "pytest-asyncio>=0.24", "pytest-cov>=4.0", "httpx>=0.28.0"]
 
 [project.scripts]
 google-ai-mcp = "google_ai_mcp.server:main"

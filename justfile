@@ -1,9 +1,9 @@
 set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 import 'scripts/just/fleet.just'
 
-# ── Dashboard (default) ──
+# --- Dashboard  default ---
 default:
-    @Write-Host "`n  Google AI MCP — Fleet Recipes`n  =============================="
+    @Write-Host "`n  Google AI MCP - Fleet Recipes`n  =============================="
     @Write-Host ""
     @Write-Host "  serve          Start backend + frontend (start.ps1)"
     @Write-Host "  dev            Start backend only (uv run python server.py)"
@@ -19,7 +19,7 @@ default:
     @Write-Host "  mcpb-pack      Build Claude Desktop .mcpb bundle"
     @Write-Host ""
 
-# ── Development ──
+# --- Development ---
 serve:
     .\start.ps1
 
@@ -29,7 +29,7 @@ kill-zombies:
 dev:
     C:\Users\sandr\.local\bin\uv.exe run python -m google_ai_mcp.server
 
-# ── Build ──
+# --- Build ---
 bootstrap:
     C:\Users\sandr\.local\bin\uv.exe sync --extra test --extra dev
     npm --prefix webapp ci
@@ -38,7 +38,7 @@ build:
     C:\Users\sandr\.local\bin\uv.exe sync --extra test --extra dev
     npm --prefix webapp ci
 
-# ── Quality ──
+# --- Quality ---
 lint:
     C:\Users\sandr\.local\bin\uv.exe run ruff check src/ tests/
 
@@ -50,14 +50,14 @@ fix:
 
 check: fmt lint
 
-# ── Test ──
+# --- Test ---
 test:
     C:\Users\sandr\.local\bin\uv.exe run pytest tests/ -q
 
 e2e:
     powershell.exe -NoProfile -NoProfile -ExecutionPolicy Bypass -File "D:\Dev\repos\mcp-central-docs\scripts\playwright-audit.ps1" -RepoPath "{{justfile_directory()}}" -BackendPort 11014 -FrontendPort 11015
 
-# ── Native ──
+# --- Native ---
 build-native:
     Set-Location '{{justfile_directory()}}\native'
     $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
@@ -73,12 +73,14 @@ build-native-debug:
 
 package: mcpb-pack
 
-# ── Housekeeping ──
+# --- Housekeeping ---
 clean:
     Get-ChildItem -Path . -Recurse -Include __pycache__,*.pyc,*.pyo,*.egg-info | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item -Path native\target\ -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item -Path native\gen\ -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item -Path dist\ -Recurse -Force -ErrorAction SilentlyContinue
 
-# ── CI ──
+# --- CI ---
 ci: build check test
+
+# Bootstrap: install dev deps + pre-commit hook

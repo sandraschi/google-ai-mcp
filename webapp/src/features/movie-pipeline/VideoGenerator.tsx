@@ -138,7 +138,7 @@ const VideoGenerator: React.FC = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch(API_BASE + "/api/video/generate", {
+      const response = await fetch(`${API_BASE}/api/video/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

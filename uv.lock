@@ -635,8 +635,12 @@ dependencies = [
 
 [package.optional-dependencies]
 dev = [
+    { name = "httpx" },
     { name = "mypy" },
     { name = "pyinstaller" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-cov" },
     { name = "ruff" },
 ]
 test = [
@@ -655,13 +659,17 @@ requires-dist = [
     { name = "google-cloud-aiplatform", specifier = ">=1.127.0" },
     { name = "google-genai", specifier = ">=1.20.0" },
     { name = "httpx", specifier = ">=0.28.0" },
+    { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.28.0" },
     { name = "httpx", marker = "extra == 'test'" },
     { name = "mypy", marker = "extra == 'dev'" },
     { name = "pillow", specifier = ">=10.0.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pyinstaller", marker = "extra == 'dev'", specifier = ">=6.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24" },
     { name = "pytest-asyncio", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0" },
     { name = "pytest-cov", marker = "extra == 'test'" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.16.0,<0.17" },

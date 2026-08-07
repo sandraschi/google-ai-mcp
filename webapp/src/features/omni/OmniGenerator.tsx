@@ -1,6 +1,6 @@
 import {
-  AutoAwesome as OmniIcon,
   Download as DownloadIcon,
+  AutoAwesome as OmniIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import {
@@ -59,7 +59,7 @@ const OmniGenerator: React.FC = () => {
     setInfoMessage(null);
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/omni/generate", {
+      const response = await fetch(`${API_BASE}/api/v1/omni/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,11 +95,16 @@ const OmniGenerator: React.FC = () => {
     <Box sx={{ flex: 1, overflow: "auto" }}>
       <Stack spacing={3}>
         <Box>
-          <Typography variant="h4" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
             <OmniIcon color="primary" /> Gemini Omni
           </Typography>
           <Typography color="text.secondary">
-            Create video from any input — text, images, audio, and reference video. Conversational editing supported.
+            Create video from any input — text, images, audio, and reference
+            video. Conversational editing supported.
           </Typography>
           <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
             <Chip label="Text" size="small" />
@@ -130,8 +135,14 @@ const OmniGenerator: React.FC = () => {
               <Grid item xs={12} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Model</InputLabel>
-                  <Select value={model} label="Model" onChange={(e) => setModel(e.target.value)}>
-                    <MenuItem value="gemini-omni-flash">Gemini Omni Flash</MenuItem>
+                  <Select
+                    value={model}
+                    label="Model"
+                    onChange={(e) => setModel(e.target.value)}
+                  >
+                    <MenuItem value="gemini-omni-flash">
+                      Gemini Omni Flash
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -148,7 +159,11 @@ const OmniGenerator: React.FC = () => {
               <Grid item xs={6} md={4}>
                 <FormControl fullWidth>
                   <InputLabel>Aspect ratio</InputLabel>
-                  <Select value={aspectRatio} label="Aspect ratio" onChange={(e) => setAspectRatio(e.target.value)}>
+                  <Select
+                    value={aspectRatio}
+                    label="Aspect ratio"
+                    onChange={(e) => setAspectRatio(e.target.value)}
+                  >
                     <MenuItem value="16:9">16:9</MenuItem>
                     <MenuItem value="9:16">9:16</MenuItem>
                     <MenuItem value="1:1">1:1</MenuItem>
@@ -203,11 +218,17 @@ const OmniGenerator: React.FC = () => {
                 size="large"
                 onClick={handleGenerate}
                 disabled={isGenerating}
-                startIcon={isGenerating ? <CircularProgress size={20} /> : <OmniIcon />}
+                startIcon={
+                  isGenerating ? <CircularProgress size={20} /> : <OmniIcon />
+                }
               >
                 {isGenerating ? "Generating..." : "Generate with Omni"}
               </Button>
-              <Button variant="outlined" startIcon={<RefreshIcon />} onClick={() => setOutputs([])}>
+              <Button
+                variant="outlined"
+                startIcon={<RefreshIcon />}
+                onClick={() => setOutputs([])}
+              >
                 Clear outputs
               </Button>
             </Stack>
@@ -222,9 +243,19 @@ const OmniGenerator: React.FC = () => {
               </Typography>
               <Stack spacing={2}>
                 {outputs.map((out) => (
-                  <Stack key={out.filename} direction="row" spacing={2} alignItems="center">
+                  <Stack
+                    key={out.filename}
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                  >
                     <Typography variant="body2">{out.filename}</Typography>
-                    <Button size="small" startIcon={<DownloadIcon />} href={out.url} download>
+                    <Button
+                      size="small"
+                      startIcon={<DownloadIcon />}
+                      href={out.url}
+                      download
+                    >
                       Download
                     </Button>
                   </Stack>

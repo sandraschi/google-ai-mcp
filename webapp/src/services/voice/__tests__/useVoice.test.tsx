@@ -36,7 +36,10 @@ function createServiceMock() {
     name: "Voice 2",
     category: "premium" as const,
   };
-  const mockVoices = new Map([
+  const mockVoices = new Map<
+    string,
+    { id: string; name: string; category: "default" | "premium" }
+  >([
     ["voice-1", voice1],
     ["voice-2", voice2],
   ]);

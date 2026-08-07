@@ -111,13 +111,24 @@ const personas: Persona[] = [
 
 const ChatInterface: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    try { const s = localStorage.getItem(LS_HISTORY); if (s) { const parsed = JSON.parse(s); return Array.isArray(parsed) ? parsed : []; } } catch { /* ignore */ }
+    try {
+      const s = localStorage.getItem(LS_HISTORY);
+      if (s) {
+        const parsed = JSON.parse(s);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+    } catch {
+      /* ignore */
+    }
     return [];
   });
   const [input, setInput] = useState("");
   const [selectedPersona, setSelectedPersona] = useState<Persona>(() => {
     const saved = localStorage.getItem(LS_PERSONALITY);
-    if (saved) { const found = personas.find(p => p.id === saved); if (found) return found; }
+    if (saved) {
+      const found = personas.find((p) => p.id === saved);
+      if (found) return found;
+    }
     return personas[0];
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -147,7 +158,14 @@ const ChatInterface: React.FC = () => {
 
   // Persist messages and personality
   useEffect(() => {
-    try { localStorage.setItem(LS_HISTORY, JSON.stringify(messages.slice(-MAX_HISTORY))); } catch { /* ignore */ }
+    try {
+      localStorage.setItem(
+        LS_HISTORY,
+        JSON.stringify(messages.slice(-MAX_HISTORY)),
+      );
+    } catch {
+      /* ignore */
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -156,14 +174,16 @@ const ChatInterface: React.FC = () => {
 
   // Backend health
   useEffect(() => {
-    fetch(API_BASE + "/api/health").then(r => setBackendOk(r.ok)).catch(() => setBackendOk(false));
+    fetch(`${API_BASE}/api/health`)
+      .then((r) => setBackendOk(r.ok))
+      .catch(() => setBackendOk(false));
   }, []);
 
   // Fetch available models from API
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const response = await fetch(API_BASE + "/api/v1/chat/models");
+        const response = await fetch(`${API_BASE}/api/v1/chat/models`);
         if (response.ok) {
           const data = await response.json();
           if (data.models && Array.isArray(data.models)) {
@@ -301,7 +321,7 @@ const ChatInterface: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/chat", {
+      const response = await fetch(`${API_BASE}/api/v1/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -374,15 +394,24 @@ const ChatInterface: React.FC = () => {
     setMessages([]);
     setError(null);
     setImageAttachments([]);
-    try { localStorage.removeItem(LS_HISTORY); } catch { /* ignore */ }
+    try {
+      localStorage.removeItem(LS_HISTORY);
+    } catch {
+      /* ignore */
+    }
   };
 
   const handleExport = useCallback(() => {
-    const text = messages.map(m => `[${m.sender.toUpperCase()}] ${m.content}`).join("\n\n---\n\n");
+    const text = messages
+      .map((m) => `[${m.sender.toUpperCase()}] ${m.content}`)
+      .join("\n\n---\n\n");
     const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = `google-ai-chat-${new Date().toISOString().slice(0, 10)}.txt`;
-    a.click(); URL.revokeObjectURL(url);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `google-ai-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   }, [messages]);
 
   return (
@@ -395,19 +424,51 @@ const ChatInterface: React.FC = () => {
         flexDirection: "column",
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-        <Typography variant="h4">
-          💬 Chat & Text Generation
-        </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
+        <Typography variant="h4">💬 Chat & Text Generation</Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-          <Chip label="skill:google-ai" size="small" variant="outlined" sx={{ fontSize: "0.7rem" }} />
+          <Chip
+            label="skill:google-ai"
+            size="small"
+            variant="outlined"
+            sx={{ fontSize: "0.7rem" }}
+          />
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: backendOk === true ? "#4caf50" : backendOk === false ? "#f44336" : "#9e9e9e" }} />
+            <Box
+              sx={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                bgcolor:
+                  backendOk === true
+                    ? "#4caf50"
+                    : backendOk === false
+                      ? "#f44336"
+                      : "#9e9e9e",
+              }}
+            />
             <Typography variant="caption" color="text.secondary">
-              {backendOk === true ? "Online" : backendOk === false ? "Offline" : "Checking..."}
+              {backendOk === true
+                ? "Online"
+                : backendOk === false
+                  ? "Offline"
+                  : "Checking..."}
             </Typography>
           </Box>
-          <IconButton size="small" onClick={handleExport} disabled={messages.length === 0} data-testid="chat-export" title="Export chat">
+          <IconButton
+            size="small"
+            onClick={handleExport}
+            disabled={messages.length === 0}
+            data-testid="chat-export"
+            title="Export chat"
+          >
             <DownloadIcon fontSize="small" />
           </IconButton>
         </Box>
@@ -425,7 +486,7 @@ const ChatInterface: React.FC = () => {
               <Stack spacing={3}>
                 <FormControl fullWidth>
                   <InputLabel>AI Model</InputLabel>
-                    <Select
+                  <Select
                     data-testid="model-select"
                     value={selectedModel}
                     label="AI Model"

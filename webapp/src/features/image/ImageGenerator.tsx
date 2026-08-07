@@ -260,7 +260,7 @@ const ImageGenerator: React.FC = () => {
     }
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/generate_image", {
+      const response = await fetch(`${API_BASE}/api/v1/generate_image`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

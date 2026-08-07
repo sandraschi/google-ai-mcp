@@ -181,7 +181,7 @@ export const MoviePipeline: React.FC = () => {
     try {
       const selectedStyle = movieStyles.find((s) => s.id === movieState.style);
 
-      const response = await fetch(API_BASE + "/api/v1/movie/refine", {
+      const response = await fetch(`${API_BASE}/api/v1/movie/refine`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -341,7 +341,7 @@ Unable to generate detailed script. Please try again or configure API credential
         approved: true,
       }));
 
-      const response = await fetch(API_BASE + "/api/v1/movie/generate", {
+      const response = await fetch(`${API_BASE}/api/v1/movie/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -379,7 +379,9 @@ Unable to generate detailed script. Please try again or configure API credential
         pollCount++;
 
         try {
-          const statusResponse = await fetch(`${API_BASE}/api/v1/movie/${movieId}/status`);
+          const statusResponse = await fetch(
+            `${API_BASE}/api/v1/movie/${movieId}/status`,
+          );
           if (!statusResponse.ok) continue;
 
           const statusData = await statusResponse.json();

@@ -136,9 +136,7 @@ export function LogViewer({ open, onClose }: LogViewerProps) {
     try {
       const ws = new WebSocket(wsUrl);
 
-      ws.onopen = () => {
-        console.log("Log WebSocket connected");
-      };
+      ws.onopen = () => {};
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -152,7 +150,6 @@ export function LogViewer({ open, onClose }: LogViewerProps) {
       };
 
       ws.onclose = () => {
-        console.log("Log WebSocket closed");
         wsRef.current = null;
       };
 
@@ -209,8 +206,7 @@ export function LogViewer({ open, onClose }: LogViewerProps) {
       searchTerm === "" ||
       log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.source.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (log.details &&
-        log.details.toLowerCase().includes(searchTerm.toLowerCase()));
+      log.details?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSource =
       sourceFilter === "" ||
       log.source.toLowerCase().includes(sourceFilter.toLowerCase());

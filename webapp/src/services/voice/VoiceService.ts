@@ -541,7 +541,7 @@ export class VoiceService extends EventEmitter implements IVoiceService {
         const transcript = result[0].transcript;
 
         if (result.isFinal) {
-          this._finalTranscript += transcript + " ";
+          this._finalTranscript += `${transcript} `;
         } else {
           interimTranscript += transcript;
         }

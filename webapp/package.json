@@ -29,7 +29,9 @@
 		"eject": "react-scripts eject",
 		"lint": "biome check ./src",
 		"lint:fix": "biome check --write ./src",
-		"format": "biome format --write ./src"
+		"format": "biome format --write ./src",
+		"check": "tsc --noEmit",
+		"biome:ci": "biome ci src"
 	},
 	"browserslist": {
 		"production": [

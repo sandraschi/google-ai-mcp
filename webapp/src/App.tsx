@@ -1,5 +1,4 @@
 import {
-  AutoAwesome as OmniIcon,
   Brightness4,
   Brightness7,
   Chat as ChatIcon,
@@ -11,6 +10,7 @@ import {
   Menu as MenuIcon,
   Mic as MicIcon,
   MusicNote as MusicIcon,
+  AutoAwesome as OmniIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
   Movie as VideoIcon,
@@ -97,14 +97,14 @@ const AppContent = () => {
       path: "/image",
       description: "Nano Banana 2 / Gemini image",
     },
-		{
-			text: "Gemini Omni",
-			icon: <OmniIcon />,
-			path: "/omni",
-			description: "Any-to-any multimodal video (Omni Flash)",
-		},
-		{
-			text: "Music Generation",
+    {
+      text: "Gemini Omni",
+      icon: <OmniIcon />,
+      path: "/omni",
+      description: "Any-to-any multimodal video (Omni Flash)",
+    },
+    {
+      text: "Music Generation",
       icon: <MusicIcon />,
       path: "/music",
       description: "Generate music with Lyria",
@@ -150,9 +150,9 @@ const AppContent = () => {
               mx: 1,
               borderRadius: 2,
               "&.Mui-selected": {
-                backgroundColor: theme.palette.primary.main + "20",
+                backgroundColor: `${theme.palette.primary.main}20`,
                 "&:hover": {
-                  backgroundColor: theme.palette.primary.main + "30",
+                  backgroundColor: `${theme.palette.primary.main}30`,
                 },
               },
             }}
@@ -206,7 +206,7 @@ const AppContent = () => {
             component="div"
             sx={{ flexGrow: 1, fontWeight: 600 }}
           >
-						🚀 Google AI MCP
+            🚀 Google AI MCP
           </Typography>
 
           {import.meta.env.REACT_APP_BUILD_TIME && (
@@ -345,9 +345,9 @@ const AppContent = () => {
               <Route path="/chat" element={<ChatInterface />} />
               <Route path="/speech" element={<Speech />} />
               <Route path="/live" element={<GeminiLive />} />
-							<Route path="/image" element={<ImageGenerator />} />
-							<Route path="/omni" element={<OmniGenerator />} />
-							<Route path="/music" element={<MusicGenerator />} />
+              <Route path="/image" element={<ImageGenerator />} />
+              <Route path="/omni" element={<OmniGenerator />} />
+              <Route path="/music" element={<MusicGenerator />} />
               <Route path="/video" element={<VideoGenerator />} />
               <Route path="/movie" element={<MoviePipeline />} />
               <Route path="/romance" element={<RomanceNovelGenerator />} />

@@ -1,4 +1,7 @@
-import { GraphicEq as LiveIcon, OpenInNew as OpenIcon } from "@mui/icons-material";
+import {
+  GraphicEq as LiveIcon,
+  OpenInNew as OpenIcon,
+} from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -28,8 +31,8 @@ const GeminiLive: React.FC = () => {
 
       <Stack spacing={2}>
         <Alert severity="info">
-          Real-time Gemini Live sessions (bidirectional audio, streaming STT/TTS,
-          Chirp, FunASR, ElevenLabs) live in{" "}
+          Real-time Gemini Live sessions (bidirectional audio, streaming
+          STT/TTS, Chirp, FunASR, ElevenLabs) live in{" "}
           <strong>
             <a href={SPEECH_MCP_REPO} target="_blank" rel="noopener noreferrer">
               speech-mcp
@@ -44,16 +47,17 @@ const GeminiLive: React.FC = () => {
             <Stack spacing={2}>
               <Typography variant="h6">Division of responsibility</Typography>
               <Typography variant="body2" color="text.secondary">
-                <strong>google-ai-mcp</strong> — Gemini chat, image, video, music,
-                embeddings, Omni, and simple TTS for quick demos.
+                <strong>google-ai-mcp</strong> — Gemini chat, image, video,
+                music, embeddings, Omni, and simple TTS for quick demos.
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                <strong>speech-mcp</strong> — Gemini 3.1 Flash Live WebSocket proxy,
-                streaming speech I/O, voice catalogs, and fleet speech tooling.
+                <strong>speech-mcp</strong> — Gemini 3.1 Flash Live WebSocket
+                proxy, streaming speech I/O, voice catalogs, and fleet speech
+                tooling.
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Avoid duplicating Live/STT stacks here; run speech-mcp on its fleet
-                port when you need low-latency voice agents.
+                Avoid duplicating Live/STT stacks here; run speech-mcp on its
+                fleet port when you need low-latency voice agents.
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
                 <Button
@@ -65,11 +69,7 @@ const GeminiLive: React.FC = () => {
                 >
                   Open speech-mcp
                 </Button>
-                <Button
-                  variant="outlined"
-                  component={RouterLink}
-                  to="/speech"
-                >
+                <Button variant="outlined" component={RouterLink} to="/speech">
                   One-shot TTS here
                 </Button>
                 <Button

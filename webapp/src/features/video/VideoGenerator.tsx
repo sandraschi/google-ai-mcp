@@ -81,7 +81,7 @@ const VideoGenerator: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/generate", {
+      const response = await fetch(`${API_BASE}/api/v1/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -113,9 +113,7 @@ const VideoGenerator: React.FC = () => {
     const wsHost = window.location.host;
     const ws = new WebSocket(`${wsProtocol}//${wsHost}/ws/${generationId}`);
 
-    ws.onopen = () => {
-      console.log("WebSocket connected");
-    };
+    ws.onopen = () => {};
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -130,10 +128,6 @@ const VideoGenerator: React.FC = () => {
 
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
-    };
-
-    ws.onclose = () => {
-      console.log("WebSocket disconnected");
     };
 
     setWsConnection(ws);

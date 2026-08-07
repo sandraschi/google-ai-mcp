@@ -31,9 +31,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { API_BASE } from "../../lib/api";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../../lib/api";
 
 interface SettingsConfig {
   // API Configuration
@@ -143,7 +143,7 @@ const Settings: React.FC = () => {
 
   const loadSettings = async () => {
     try {
-      const response = await fetch(API_BASE + "/api/v1/settings");
+      const response = await fetch(`${API_BASE}/api/v1/settings`);
       if (response.ok) {
         const savedSettings = await response.json();
         setSettings((prev) => ({ ...prev, ...savedSettings }));
@@ -158,7 +158,7 @@ const Settings: React.FC = () => {
     setSaveStatus("saving");
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/settings", {
+      const response = await fetch(`${API_BASE}/api/v1/settings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -206,12 +206,15 @@ const Settings: React.FC = () => {
     setConnectionMessage("");
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/settings/test-connection", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${API_BASE}/api/v1/settings/test-connection`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       const result = await response.json();
 
@@ -225,7 +228,7 @@ const Settings: React.FC = () => {
     } catch (error) {
       setConnectionStatus("error");
       setConnectionMessage(
-        "Failed to test connection: " + (error as Error).message,
+        `Failed to test connection: ${(error as Error).message}`,
       );
     }
   };

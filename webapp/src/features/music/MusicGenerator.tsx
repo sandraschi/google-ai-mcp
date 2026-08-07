@@ -132,7 +132,7 @@ const MusicGenerator: React.FC = () => {
     setAudioUrl(null);
 
     try {
-      const response = await fetch(API_BASE + "/api/v1/music/generate", {
+      const response = await fetch(`${API_BASE}/api/v1/music/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,9 @@ const MusicGenerator: React.FC = () => {
   const pollStatus = async (generationId: string) => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/v1/music/status/${generationId}`);
+        const response = await fetch(
+          `${API_BASE}/api/v1/music/status/${generationId}`,
+        );
         if (response.ok) {
           const status: MusicGenerationStatus & {
             mock_mode?: boolean;
