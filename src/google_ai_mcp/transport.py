@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_server(mcp, server_name: str = "google-ai-mcp") -> None:
-    """Run the MCP server — stdio or HTTP mode based on CLI args.
+    """Run the MCP server - stdio or HTTP mode based on CLI args.
 
     Parses ``--http`` and ``--port`` from ``sys.argv``. When ``--http`` is
     present (the Tauri sidecar convention), starts uvicorn on the given port.
@@ -21,7 +21,7 @@ def run_server(mcp, server_name: str = "google-ai-mcp") -> None:
     parser.add_argument("--port", type=int, default=int(os.getenv("MCP_PORT", "11014")), help="HTTP port")
     known, _ = parser.parse_known_args()
 
-    if known.http:
+    if known.http or os.getenv("GOOGLEAI_TAURI", "").lower() in ("1", "true", "yes"):
         from google_ai_mcp.server import create_app
 
         app = create_app()
