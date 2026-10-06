@@ -1,4 +1,4 @@
-# Per-repo fleet start config for google-ai-mcp
+﻿# Per-repo fleet start config for google-ai-mcp
 # Edit ports/backend target here - start.ps1 is fleet-standard.
 @{
     Name         = 'google-ai-mcp'
@@ -10,7 +10,6 @@
         Kind          = 'uvicorn'
         UvicornTarget = 'google_ai_mcp.server:app'
         SyncExtras    = @('dev')
-        SyncOnStart  = $true
         Env           = @{ WEB_PORT = '11014' }
     }
     Frontend = @{
