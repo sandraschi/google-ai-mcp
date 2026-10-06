@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 # gemini-3-pro-preview shut down March 9 2026 - migrated to 3.1
 DEFAULT_CHAT_MODEL = "gemini-3.1-pro-preview"
 
-# Hosted Gemma on Gemini API — Gemma 4 supersedes Gemma 3; legacy Gemma 3 ids resolve in resolve_chat_model().
+# Hosted Gemma on Gemini API - Gemma 4 supersedes Gemma 3; legacy Gemma 3 ids resolve in resolve_chat_model().
 GEMMA4_31B = "gemma-4-31b-it"
 GEMMA4_26B_MOE = "gemma-4-26b-a4b-it"
 
@@ -280,13 +280,13 @@ class ChatClient:
             responses = [
                 f"[Mock vision] Model {resolved_model} received {len(images)} image(s). "
                 f"Your question: {prompt[:120]!r}… Configure GOOGLE_API_KEY for real multimodal answers.",
-                "This is mock mode — image bytes are not sent to the API without a key.",
+                "This is mock mode - image bytes are not sent to the API without a key.",
             ]
         else:
             responses = [
                 "This is a simulated response from Gemini Tools mock mode.",
                 "Configure GOOGLE_API_KEY to enable live responses.",
-                f"You asked: '{prompt[:80]}...' — mock mode active.",
+                f"You asked: '{prompt[:80]}...' - mock mode active.",
             ]
         import hashlib
 

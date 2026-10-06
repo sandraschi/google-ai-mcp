@@ -130,7 +130,7 @@ def setup_compat_routes(app: FastAPI, deps: dict[str, Any]) -> None:
         ok = not status.get("mock_mode", True)
         return {
             "success": ok,
-            "message": "API key valid — chat client connected" if ok else status.get("message", "Mock mode — check API key"),
+            "message": "API key valid - chat client connected" if ok else status.get("message", "Mock mode - check API key"),
             "configured": bool(resolve_api_key()),
             "projectId": resolve_project_id(),
         }
@@ -187,7 +187,7 @@ def setup_compat_routes(app: FastAPI, deps: dict[str, Any]) -> None:
             "created_at": _now(),
             "updated_at": _now(),
             "mock_mode": True,
-            "message": "Romance novel generation uses chat mock — full pipeline coming soon.",
+            "message": "Romance novel generation uses chat mock - full pipeline coming soon.",
         }
         return _jobs[novel_id]
 
@@ -206,7 +206,7 @@ def setup_compat_routes(app: FastAPI, deps: dict[str, Any]) -> None:
         from fastapi.responses import PlainTextResponse
 
         return PlainTextResponse(
-            f"# {job.get('title', 'Romance Novel')}\n\n(Mock chapter — configure Gemini for live generation.)\n",
+            f"# {job.get('title', 'Romance Novel')}\n\n(Mock chapter - configure Gemini for live generation.)\n",
             media_type="text/plain",
             headers={"Content-Disposition": f'attachment; filename="romance_{novel_id[:8]}.txt"'},
         )

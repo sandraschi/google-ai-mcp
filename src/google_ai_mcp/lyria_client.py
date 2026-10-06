@@ -1,5 +1,5 @@
 """
-Lyria music generation — Lyria 3 only (google-genai + Vertex, location global).
+Lyria music generation - Lyria 3 only (google-genai + Vertex, location global).
 
 Legacy Lyria 1 / Lyria 2 product and API names are accepted as aliases and
 resolved to Lyria 3 model IDs (`lyria-3-pro-preview`, `lyria-3-clip-preview`);
@@ -54,8 +54,8 @@ _LYRIA_ALIASES: dict[str, str] = {
 }
 
 LYRIA_MODELS: dict[str, str] = {
-    LYRIA3_PRO: "Lyria 3 Pro — full tracks (preview)",
-    LYRIA3_CLIP: "Lyria 3 Clip — ~30s clips (preview)",
+    LYRIA3_PRO: "Lyria 3 Pro - full tracks (preview)",
+    LYRIA3_CLIP: "Lyria 3 Clip - ~30s clips (preview)",
     "lyria-3": "Lyria 3 Pro (alias)",
     "lyria-3-pro": "Lyria 3 Pro (alias)",
     "lyria-3-clip": "Lyria 3 Clip (alias)",
@@ -308,7 +308,7 @@ class LyriaClient:
                 "num_tracks": len(tracks),
                 "generated_at": datetime.utcnow().isoformat(),
                 "api": "mock",
-                "note": "Mock mode — set GOOGLE_CLOUD_PROJECT and use Lyria 3 via google-genai on Vertex.",
+                "note": "Mock mode - set GOOGLE_CLOUD_PROJECT and use Lyria 3 via google-genai on Vertex.",
             },
             "mock_mode": True,
             "message": f"Running in mock mode. Reason: {self.reason}",
