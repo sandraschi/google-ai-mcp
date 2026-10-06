@@ -47,3 +47,13 @@ quote-style = "double"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "altgraph>=0.17.5",
+    "pefile>=2024.8.26",
+    "pillow>=12.2.0",
+    "pyinstaller>=6.20.0",
+    "pytesseract>=0.3.13",
+    "pywinauto>=0.6.9",
+]
