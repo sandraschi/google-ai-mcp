@@ -142,7 +142,7 @@ class SpeechClient:
                 "audio_base64": base64.b64encode(wav).decode("ascii"),
                 "model": model,
                 "voice_name": voice_name,
-                "note": "Mock WAV placeholder — set GOOGLE_API_KEY for real Gemini TTS.",
+                "note": "Mock WAV placeholder - set GOOGLE_API_KEY for real Gemini TTS.",
             }
 
         def _call():

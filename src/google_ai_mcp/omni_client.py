@@ -1,5 +1,5 @@
 """
-Gemini Omni Client — any-to-any multimodal generation (video-first).
+Gemini Omni Client - any-to-any multimodal generation (video-first).
 
 Gemini Omni Flash accepts text, image, audio, and video inputs and produces
 video output (up to 10 seconds). API rollout via Gemini/Vertex is phased;
@@ -26,7 +26,7 @@ try:
     GENAI_AVAILABLE = True
 except ImportError:
     GENAI_AVAILABLE = False
-    logger.warning("google-genai not installed — Omni will use mock mode")
+    logger.warning("google-genai not installed - Omni will use mock mode")
 
 DEFAULT_OMNI_MODEL = "gemini-omni-flash"
 OMNI_MODELS = {
@@ -95,7 +95,7 @@ class OmniClient:
                 "not_configured": "Set GOOGLE_API_KEY or GOOGLE_CLOUD_PROJECT for Gemini Omni.",
                 "dependency_missing": "Install google-genai for Omni generation.",
                 "init_failed": f"Failed to initialize: {self.last_error}",
-                "api_unavailable": "Gemini Omni API not yet available — mock mode active.",
+                "api_unavailable": "Gemini Omni API not yet available - mock mode active.",
             }
             message = messages.get(self.reason, "Running in mock mode.")
         else:
@@ -210,7 +210,7 @@ class OmniClient:
                     edit_history=edit_history or [],
                     output_path=output_path,
                     num_outputs=num_outputs,
-                    note="Omni API returned no video — API may not be GA yet.",
+                    note="Omni API returned no video - API may not be GA yet.",
                 )
 
             return {
@@ -248,7 +248,7 @@ class OmniClient:
                     edit_history=edit_history or [],
                     output_path=output_path,
                     num_outputs=num_outputs,
-                    note="Gemini Omni API not available yet — using mock output.",
+                    note="Gemini Omni API not available yet - using mock output.",
                 )
             logger.error("Omni API error: %s", api_error, exc_info=True)
             return {"success": False, "error": str(api_error), "raw_error": str(api_error)}

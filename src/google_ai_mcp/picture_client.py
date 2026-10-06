@@ -1,5 +1,5 @@
 """
-picture_client.py — compatibility shim for main.py imports.
+picture_client.py - compatibility shim for main.py imports.
 
 main.py imports: from picture_client import ImagenClient, create_imagen_client
 This module re-exports from imagen_client (the migrated implementation).

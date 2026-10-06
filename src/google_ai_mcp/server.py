@@ -1,5 +1,5 @@
 """
-Google AI MCP Server — FastMCP 3.2 gateway for Google AI services.
+Google AI MCP Server - FastMCP 3.2 gateway for Google AI services.
 
 Model Context Protocol server wrapping Gemini/Gemma chat, Nano Banana / Pro image
 generation, Veo 3.1 video generation, Lyria 3 music generation, Google TTS,
@@ -78,7 +78,7 @@ Prefab UI card: show_google_ai_status_card for a rich dashboard view."""
 
 
 class GoogleAIMCP:
-    """Google AI MCP Server — FastMCP 3.2 gateway for Google AI cloud services.
+    """Google AI MCP Server - FastMCP 3.2 gateway for Google AI cloud services.
 
     Provides MCP tools wrapping Gemini chat, Imagen (Nano Banana 2 / Pro),
     Veo 3.1 video, Lyria 3 music, Google TTS, and text embeddings.
@@ -120,7 +120,7 @@ class GoogleAIMCP:
             temperature: Annotated[float, Field(description="Sampling temperature 0.0-2.0.", ge=0.0, le=2.0)] = 0.7,
             max_tokens: Annotated[int, Field(description="Max output tokens.", ge=1, le=65536)] = 2048,
         ) -> dict[str, Any]:
-            """Chat with Gemini/Gemma models — text or multimodal.
+            """Chat with Gemini/Gemma models - text or multimodal.
 
             ## Return Format
             {success, message, data: {response: str, model: str}} or {success, message, data: {models: list}}
@@ -285,7 +285,7 @@ class GoogleAIMCP:
             edit_history: Annotated[list[str] | None, Field(description="Prior conversational edit turns.")] = None,
             num_outputs: Annotated[int, Field(description="Number of outputs to generate.", ge=1, le=4)] = 1,
         ) -> dict[str, Any]:
-            """Generate video with Gemini Omni — any input modality to video output.
+            """Generate video with Gemini Omni - any input modality to video output.
 
             ## Return Format
             {success, message, data: {outputs: [urls], model: str}} or {success, message, data: {models: list}}
@@ -398,7 +398,7 @@ class GoogleAIMCP:
             model: Annotated[str | None, Field(description="Model ID override (e.g. 'chirp-3-hd-voice' / 'chirp-3').")] = None,
             voice_name: Annotated[str, Field(description="Voice name for TTS.")] = "Kore",
         ) -> dict[str, Any]:
-            """Text-to-speech with Google Cloud TTS — Chirp 3 HD voices.
+            """Text-to-speech with Google Cloud TTS - Chirp 3 HD voices.
 
             ## Return Format
             {success, message, data: {audio_url: str, voice: str, model: str}} or {success, message, data: {voices/models: list}}
@@ -495,7 +495,7 @@ class GoogleAIMCP:
                 embedding_vector = result.get("embedding", [])
                 return {
                     "success": True,
-                    "message": f"Generated embedding — {len(embedding_vector)} dimensions",
+                    "message": f"Generated embedding - {len(embedding_vector)} dimensions",
                     "data": {
                         "embedding": embedding_vector,
                         "dimensions": len(embedding_vector),
@@ -562,7 +562,7 @@ class GoogleAIMCP:
                     "google_ai_world",
                     "show_google_ai_status_card",
                 ],
-                "message": f"Google AI MCP v0.1.0 — {available_count}/{len(services)} services available",
+                "message": f"Google AI MCP v0.1.0 - {available_count}/{len(services)} services available",
             }
 
         # ── google_ai_world ────────────────────────────────────────────────────
@@ -575,7 +575,7 @@ class GoogleAIMCP:
             ] = "health",
             extra_args: Annotated[str | None, Field(description="Optional args passed to train_prepare.")] = None,
         ) -> dict[str, Any]:
-            """Bridge to LeWorldModel (LeWM) — local JEPA world model (Meta AI/FAIR, arXiv:2603.19312).
+            """Bridge to LeWorldModel (LeWM) - local JEPA world model (Meta AI/FAIR, arXiv:2603.19312).
 
             Proxies to lewm-mcp at http://127.0.0.1:10927. LWM runs locally on GPU and
             provides world model operations independent of Google Cloud.
@@ -622,7 +622,7 @@ class GoogleAIMCP:
                 Text,
             )
         except ImportError:
-            logger.warning("prefab_ui not installed — Prefab tools skipped (pip install prefab-ui>=0.18.0)")
+            logger.warning("prefab_ui not installed - Prefab tools skipped (pip install prefab-ui>=0.18.0)")
             return
 
         mcp = self.mcp
@@ -632,7 +632,7 @@ class GoogleAIMCP:
             """Show Google AI service connectivity as a rich Prefab status card.
 
             Displays a live grid of all six Google AI services with connection state,
-            service label, and status message — no need to parse JSON in chat.
+            service label, and status message - no need to parse JSON in chat.
             """
             refresh_cached_clients()
             rows: list[dict[str, str | bool]] = []
@@ -658,7 +658,7 @@ class GoogleAIMCP:
             connected_count = sum(1 for r in rows if r["available"])
 
             with Column(gap=4, css_class="p-4") as view:
-                Heading(f"Google AI MCP — Services ({connected_count}/{len(rows)} available)")
+                Heading(f"Google AI MCP - Services ({connected_count}/{len(rows)} available)")
                 Separator()
                 with Grid(columns=3, gap=3):
                     for row in rows:
@@ -667,7 +667,7 @@ class GoogleAIMCP:
                         with Card(), CardContent(css_class="pt-4"):
                             Muted(row["name"])
                             Heading(status_text)
-                            Text(f"{row['label']} — {row['message'][:60]}")
+                            Text(f"{row['label']} - {row['message'][:60]}")
                 if not rows:
                     Text("No services configured. Set GOOGLE_API_KEY or GOOGLE_APPLICATION_CREDENTIALS env vars.")
 
@@ -759,7 +759,7 @@ def create_app() -> FastAPI:
 
         setup_routes(app, google_ai_mcp.mcp)
     except ImportError as exc:
-        logger.info("web.py not found — REST dashboard endpoints skipped (%s)", exc)
+        logger.info("web.py not found - REST dashboard endpoints skipped (%s)", exc)
 
     app.mount("/mcp", _mcp_http)
 
@@ -778,7 +778,7 @@ def main() -> None:
     except ImportError:
         import asyncio
 
-        logger.info("No transport module found — running stdio")
+        logger.info("No transport module found - running stdio")
         asyncio.run(google_ai_mcp.mcp.run_stdio_async())
 
 
