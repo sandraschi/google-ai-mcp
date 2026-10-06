@@ -26,6 +26,8 @@ foreach ($dir in $frontendDirs) {
             throw "TypeScript compilation failed - fix all errors before building NSIS installer"
         }
 
+        # Operator backend port (google-ai-mcp-native claim); same value as backend.rs BACKEND_PORT.
+        $env:VITE_API_BASE = "http://127.0.0.1:11242"
         npm run build
         if ($LASTEXITCODE -ne 0) { throw "Frontend build failed" }
         Pop-Location
@@ -52,7 +54,21 @@ if (Test-Path $specFile) {
             Write-Host "  Patched fastmcp metadata fallback" -ForegroundColor Yellow
         }
     }
-    uv run pyinstaller "$specFile" --clean --noconfirm
+    # PyInstaller MUST run from the project venv, not `uv run pyinstaller` --
+    # that resolves to the isolated global uv-tool environment (no project
+    # packages visible there), so copy_metadata("fastmcp") in the spec file
+    # silently fails and the frozen exe crashes with PackageNotFoundError at
+    # import time. See TAURI_PRODUCTION_PITFALLS.md sec 13 #12-13.
+    $pyiExe = "$Root\.venv\Scripts\pyinstaller.exe"
+    if (-not (Test-Path $pyiExe)) {
+        Write-Host "  pyinstaller missing from project venv - adding as dev dependency" -ForegroundColor Yellow
+        Push-Location $Root
+        uv add --dev pyinstaller pefile altgraph
+        uv sync
+        Pop-Location
+    }
+    Remove-Item "$Root\dist\${RepoName}-backend.exe" -Force -ErrorAction SilentlyContinue
+    & $pyiExe "$specFile" --clean --noconfirm
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed with exit code $LASTEXITCODE" }
     Pop-Location
 } else {
