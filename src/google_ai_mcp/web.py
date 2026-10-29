@@ -53,7 +53,7 @@ def setup_routes(app: FastAPI, mcp: FastMCP) -> None:
     @app.get("/api/v1/chat/models")
     async def chat_models():
         client = get_chat_client()
-        models = getattr(client, "AVAILABLE_CHAT_MODELS", {})
+        models = client.get_available_models()
         return {"models": models, "default": DEFAULT_CHAT_MODEL}
 
     # ── Image ──────────────────────────────────────────────────────────────────
@@ -184,7 +184,7 @@ def setup_routes(app: FastAPI, mcp: FastMCP) -> None:
 
     @app.get("/api/v1/models")
     async def list_all_models():
-        chat_m = getattr(get_chat_client(), "AVAILABLE_CHAT_MODELS", {})
+        chat_m = get_chat_client().get_available_models()
         img_m = get_imagen_client().get_available_models()
         vid_m = get_veo_client().get_available_models()
         mus_m = get_lyria_client().get_available_models()
