@@ -1,7 +1,7 @@
 [project]
 name = "google-ai-mcp"
-version = "0.1.0"
-description = "FastMCP 3.2 server for Google AI services — Gemini Chat, Nano Banana image gen, Veo video, Lyria music, TTS, Live, Embeddings"
+version = "0.2.0"
+description = "FastMCP server for Google AI: Gemini 3.8 / 4 Argon chat, Nano Banana 2.1 images, Veo 3.1 + Omni video, Lyria 3.5 music, Gemini 3.8 TTS, embeddings"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.0",
@@ -9,8 +9,7 @@ dependencies = [
     "uvicorn[standard]>=0.38.0",
     "websockets>=15.0.0",
     "pydantic>=2.0.0",
-    "google-genai>=1.20.0",
-    "google-cloud-aiplatform>=1.127.0",
+    "google-genai>=2.6.0,<3",
     "google-auth>=2.43.0",
     "python-multipart>=0.0.20",
     "aiofiles>=24.0.0",

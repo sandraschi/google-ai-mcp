@@ -1,0 +1,66 @@
+{
+  "manifest_version": "0.2",
+  "name": "google-ai-mcp",
+  "version": "0.1.0",
+  "description": "FastMCP 3.2 gateway for Google AI — Gemini chat, Imagen, Veo, Lyria, Omni, TTS, embeddings, and LeWM world-model bridge",
+  "author": {
+    "name": "Sandra Schi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sandraschi/google-ai-mcp"
+  },
+  "homepage": "https://github.com/sandraschi/google-ai-mcp",
+  "license": "MIT",
+  "server": {
+    "type": "python",
+    "entry_point": "src/google_ai_mcp/server.py",
+    "mcp_config": {
+      "command": "python",
+      "args": ["-m", "google_ai_mcp.server"],
+      "env": {
+        "PYTHONPATH": "${PWD}/src",
+        "PYTHONUNBUFFERED": "1",
+        "GOOGLE_API_KEY": "${user_config.google_api_key}",
+        "GOOGLE_CLOUD_PROJECT": "${user_config.google_cloud_project}",
+        "LEWM_API_URL": "${user_config.lewm_api_url}"
+      }
+    }
+  },
+  "user_config": {
+    "google_api_key": {
+      "type": "string",
+      "title": "Google AI API Key",
+      "description": "API key from Google AI Studio (aistudio.google.com)",
+      "required": false,
+      "default": "",
+      "secret": true
+    },
+    "google_cloud_project": {
+      "type": "string",
+      "title": "Google Cloud Project ID",
+      "description": "Required for Veo video and Lyria music (Vertex AI)",
+      "required": false,
+      "default": ""
+    },
+    "lewm_api_url": {
+      "type": "string",
+      "title": "LeWM MCP URL",
+      "description": "Local lewm-mcp HTTP endpoint for world-model bridge",
+      "required": false,
+      "default": "http://127.0.0.1:10927"
+    }
+  },
+  "tools": [
+    {"name": "google_ai_chat", "description": "Gemini/Gemma chat and list_models"},
+    {"name": "google_ai_image", "description": "Nano Banana / Imagen image generation"},
+    {"name": "google_ai_video", "description": "Veo 3.1 video generation"},
+    {"name": "google_ai_omni", "description": "Gemini Omni multimodal any-to-any video"},
+    {"name": "google_ai_music", "description": "Lyria 3 music generation"},
+    {"name": "google_ai_speech", "description": "One-shot Gemini TTS (not Live — use speech-mcp for streaming)"},
+    {"name": "google_ai_embeddings", "description": "Text embeddings via gemini-embedding-001"},
+    {"name": "google_ai_world", "description": "LeWorldModel bridge via local lewm-mcp"},
+    {"name": "google_ai_status", "description": "Health check all Google AI services"},
+    {"name": "show_google_ai_status_card", "description": "Prefab dashboard card for service status"}
+  ]
+}
