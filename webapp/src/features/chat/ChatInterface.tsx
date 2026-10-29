@@ -145,16 +145,15 @@ const ChatInterface: React.FC = () => {
   const MAX_ATTACHMENTS = 4;
 
   const [models, setModels] = useState([
-    { value: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (recommended)" },
-    { value: "gemini-3-flash-preview", label: "Gemini 3 Flash" },
+    { value: "gemini-3.8-flash", label: "Gemini 3.8 Flash (default)" },
+    { value: "gemini-4-argon", label: "Gemini 4 Argon (paid tier)" },
+    { value: "gemini-3.6-flash", label: "Gemini 3.6 Flash" },
+    { value: "gemini-3.5-flash-lite", label: "Gemini 3.5 Flash-Lite" },
     { value: "gemma-4-31b-it", label: "Gemma 4 31B IT" },
     { value: "gemma-4-26b-a4b-it", label: "Gemma 4 26B MoE IT" },
-    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro (Legacy)" },
-    { value: "gemini-2.0-flash-exp", label: "Gemini 2.0 Flash (Legacy)" },
-    { value: "gemini-1.5-pro-latest", label: "Gemini 1.5 Pro (Legacy)" },
   ]);
 
-  const [selectedModel, setSelectedModel] = useState("gemini-3.1-pro-preview");
+  const [selectedModel, setSelectedModel] = useState("gemini-3.8-flash");
 
   // Persist messages and personality
   useEffect(() => {
@@ -186,23 +185,30 @@ const ChatInterface: React.FC = () => {
         const response = await fetch(`${API_BASE}/api/v1/chat/models`);
         if (response.ok) {
           const data = await response.json();
-          if (data.models && Array.isArray(data.models)) {
+          const defaultModel = data.default ?? data.default_model;
+          if (
+            data.models &&
+            typeof data.models === "object" &&
+            !Array.isArray(data.models)
+          ) {
+            // Backend returns { model_id: label }
+            const entries = Object.entries(
+              data.models as Record<string, string>,
+            );
+            if (entries.length > 0) {
+              setModels(entries.map(([value, label]) => ({ value, label })));
+              if (defaultModel) setSelectedModel(defaultModel);
+            }
+          } else if (data.models && Array.isArray(data.models)) {
             const modelOptions = data.models.map((model: string) => {
               // Generate display label from model name dynamically
               const generateLabel = (modelName: string): string => {
                 // Known model mappings for better display names
                 const labelMap: Record<string, string> = {
-                  "gemini-3.1-pro-preview": "Gemini 3.1 Pro (recommended)",
-                  "gemini-3-flash-preview": "Gemini 3 Flash",
-                  "gemini-3-pro-preview": "Gemini 3 Pro (legacy id)",
-                  "gemini-3-pro": "Gemini 3 Pro",
+                  "gemini-3.8-flash": "Gemini 3.8 Flash (default)",
+                  "gemini-4-argon": "Gemini 4 Argon (paid tier)",
                   "gemma-4-31b-it": "Gemma 4 31B IT (multimodal)",
                   "gemma-4-26b-a4b-it": "Gemma 4 26B MoE IT (multimodal)",
-                  "gemma-3-27b-it": "Gemma 3 id → Gemma 4 31B",
-                  "gemini-2.5-pro": "Gemini 2.5 Pro",
-                  "gemini-2.0-flash-exp": "Gemini 2.0 Flash (Experimental)",
-                  "gemini-1.5-pro-latest": "Gemini 1.5 Pro (Latest)",
-                  "gemini-1.5-flash-latest": "Gemini 1.5 Flash (Latest)",
                 };
 
                 // If we have a known mapping, use it
@@ -233,8 +239,8 @@ const ChatInterface: React.FC = () => {
               };
             });
             setModels(modelOptions);
-            if (data.default_model) {
-              setSelectedModel(data.default_model);
+            if (defaultModel) {
+              setSelectedModel(defaultModel);
             }
           }
         }

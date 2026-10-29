@@ -91,7 +91,7 @@ const Settings: React.FC = () => {
     apiEndpoint: "google-gen-ai-sdk",
 
     chat: {
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-3.8-flash",
       maxTokens: 2048,
       temperature: 0.7,
       enableHistory: true,
@@ -99,7 +99,7 @@ const Settings: React.FC = () => {
     },
 
     image: {
-      model: "nano-banana-2",
+      model: "gemini-nano-banana-2.1",
       defaultSize: "1024x1024",
       quality: "standard",
       style: "natural",
@@ -107,14 +107,14 @@ const Settings: React.FC = () => {
     },
 
     music: {
-      model: "lyria-3-pro-preview",
+      model: "lyria-3.5",
       defaultDuration: 30,
       defaultGenre: "electronic",
       defaultMood: "energetic",
     },
 
     video: {
-      model: "veo-3.1-preview-002",
+      model: "veo-3.1-generate-001",
       defaultDuration: 6,
       defaultAspectRatio: "16:9",
       quality: "standard",
@@ -402,24 +402,21 @@ const Settings: React.FC = () => {
                       handleSettingChange("chat", "model", e.target.value)
                     }
                   >
-                    <MenuItem value="gemini-3.1-pro-preview">
-                      Gemini 3.1 Pro (recommended)
+                    <MenuItem value="gemini-3.8-flash">
+                      Gemini 3.8 Flash (default)
                     </MenuItem>
-                    <MenuItem value="gemini-3-flash-preview">
-                      Gemini 3 Flash
+                    <MenuItem value="gemini-4-argon">
+                      Gemini 4 Argon (paid tier)
+                    </MenuItem>
+                    <MenuItem value="gemini-3.6-flash">
+                      Gemini 3.6 Flash
+                    </MenuItem>
+                    <MenuItem value="gemini-3.5-flash-lite">
+                      Gemini 3.5 Flash-Lite
                     </MenuItem>
                     <MenuItem value="gemma-4-31b-it">Gemma 4 31B IT</MenuItem>
                     <MenuItem value="gemma-4-26b-a4b-it">
                       Gemma 4 26B MoE IT
-                    </MenuItem>
-                    <MenuItem value="gemma-3-27b-it">
-                      Gemma 3 legacy id → Gemma 4
-                    </MenuItem>
-                    <MenuItem value="gemini-2.5-pro">
-                      Gemini 2.5 Pro (Legacy)
-                    </MenuItem>
-                    <MenuItem value="gemini-2.0-flash-exp">
-                      Gemini 2.0 Flash (Deprecated)
                     </MenuItem>
                   </Select>
                 </FormControl>
@@ -500,17 +497,14 @@ const Settings: React.FC = () => {
                       handleSettingChange("image", "model", e.target.value)
                     }
                   >
-                    <MenuItem value="nano-banana-2">
+                    <MenuItem value="gemini-nano-banana-2.1">
+                      Nano Banana 2.1 (default)
+                    </MenuItem>
+                    <MenuItem value="gemini-3.1-flash-image">
                       Nano Banana 2 (Gemini 3.1 Flash Image)
                     </MenuItem>
-                    <MenuItem value="gemini-3.1-flash-image-preview">
-                      gemini-3.1-flash-image-preview
-                    </MenuItem>
-                    <MenuItem value="nano-banana-pro">
+                    <MenuItem value="gemini-3-pro-image">
                       Nano Banana Pro (Gemini 3 Pro Image)
-                    </MenuItem>
-                    <MenuItem value="gemini-3-pro-image-preview">
-                      gemini-3-pro-image-preview
                     </MenuItem>
                   </Select>
                 </FormControl>
@@ -593,9 +587,9 @@ const Settings: React.FC = () => {
                       handleSettingChange("music", "model", e.target.value)
                     }
                   >
-                    <MenuItem value="music-lyra-1.1">Lyra 1.1</MenuItem>
-                    <MenuItem value="lyria-1-0-generate-001">
-                      Lyra 1.0 (Legacy)
+                    <MenuItem value="lyria-3.5">Lyria 3.5 (default)</MenuItem>
+                    <MenuItem value="lyria-3-clip-preview">
+                      Lyria 3 Clip (30s)
                     </MenuItem>
                   </Select>
                 </FormControl>
@@ -686,14 +680,11 @@ const Settings: React.FC = () => {
                       handleSettingChange("video", "model", e.target.value)
                     }
                   >
-                    <MenuItem value="veo-3.1-preview-002">
-                      Veo 3.1 Preview
+                    <MenuItem value="veo-3.1-generate-001">
+                      Veo 3.1 (GA, Vertex)
                     </MenuItem>
-                    <MenuItem value="veo-3.0-generate-preview">
-                      Veo 3.0 Legacy
-                    </MenuItem>
-                    <MenuItem value="veo-2.0-generate-001">
-                      Veo 2.0 Legacy
+                    <MenuItem value="veo-3.1-fast-generate-001">
+                      Veo 3.1 Fast (GA, Vertex)
                     </MenuItem>
                   </Select>
                 </FormControl>

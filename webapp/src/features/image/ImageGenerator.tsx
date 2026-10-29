@@ -54,7 +54,7 @@ interface GeneratedImage {
 const ImageGenerator: React.FC = () => {
   const [request, setRequest] = useState<ImageGenerationRequest>({
     prompt: "",
-    model: "nano-banana-2",
+    model: "gemini-nano-banana-2.1",
     aspect_ratio: "1:1",
     num_images: 1,
   });
@@ -85,15 +85,17 @@ const ImageGenerator: React.FC = () => {
   ];
 
   const models = [
-    { value: "nano-banana-2", label: "Nano Banana 2 (Gemini 3.1 Flash Image)" },
     {
-      value: "gemini-3.1-flash-image-preview",
-      label: "gemini-3.1-flash-image-preview (same as above)",
+      value: "gemini-nano-banana-2.1",
+      label: "Nano Banana 2.1 (latest, default)",
     },
-    { value: "nano-banana-pro", label: "Nano Banana Pro (Gemini 3 Pro Image)" },
     {
-      value: "gemini-3-pro-image-preview",
-      label: "gemini-3-pro-image-preview (same as Pro)",
+      value: "gemini-3.1-flash-image",
+      label: "Nano Banana 2 (Gemini 3.1 Flash Image)",
+    },
+    {
+      value: "gemini-3-pro-image",
+      label: "Nano Banana Pro (Gemini 3 Pro Image, 4K)",
     },
   ];
 
@@ -349,13 +351,13 @@ const ImageGenerator: React.FC = () => {
   return (
     <Box sx={{ maxWidth: 1400, mx: "auto" }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 1 }}>
-        Image generation (Nano Banana 2)
+        Image generation (Nano Banana 2.1)
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Default model is <strong>Nano Banana 2</strong> (
-        <code>gemini-3.1-flash-image-preview</code>) via the Gemini API native
-        image modality. Use <strong>Nano Banana Pro</strong> for higher-quality
-        or editing-oriented runs.
+        Default model is <strong>Nano Banana 2.1</strong> (
+        <code>gemini-nano-banana-2.1</code>) via the Gemini API native image
+        modality. Use <strong>Nano Banana Pro</strong> for higher-quality or
+        editing-oriented runs.
       </Typography>
 
       <Grid container spacing={3}>

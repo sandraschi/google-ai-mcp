@@ -46,7 +46,7 @@ interface VideoGenerationStatus {
 const VideoGenerator: React.FC = () => {
   const [request, setRequest] = useState<VideoGenerationRequest>({
     prompt: "",
-    model: "veo-3.1-preview-002",
+    model: "veo-3.1-generate-001",
     duration: 6,
     aspect_ratio: "16:9",
     num_videos: 1,
@@ -66,9 +66,12 @@ const VideoGenerator: React.FC = () => {
   ];
 
   const models = [
-    { value: "veo-3.1-preview-002", label: "Veo 3.1 Preview" },
-    { value: "veo-3.0-generate-preview", label: "Veo 3.0 (Legacy)" },
-    { value: "veo-2.0-generate-001", label: "Veo 2.0 (Stable)" },
+    { value: "veo-3.1-generate-001", label: "Veo 3.1 (GA, Vertex)" },
+    { value: "veo-3.1-fast-generate-001", label: "Veo 3.1 Fast (GA, Vertex)" },
+    {
+      value: "veo-3.1-lite-generate-001",
+      label: "Veo 3.1 Lite (preview, Vertex)",
+    },
   ];
 
   const handleGenerate = async () => {

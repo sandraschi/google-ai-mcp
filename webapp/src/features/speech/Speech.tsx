@@ -33,7 +33,7 @@ import {
 const Speech: React.FC = () => {
   const [ttsLang, setTtsLang] = useState("en");
   const [ttsText, setTtsText] = useState(() => defaultTextForLang("en"));
-  const [ttsModel, setTtsModel] = useState("gemini-3.1-flash-tts-preview");
+  const [ttsModel, setTtsModel] = useState("gemini-3.8-flash-tts");
   const [voice, setVoice] = useState("Kore");
   const [ttsModels, setTtsModels] = useState<Record<string, string>>({});
   const [voices, setVoices] = useState<string[]>([]);
@@ -192,17 +192,11 @@ const Speech: React.FC = () => {
                           </MenuItem>
                         ))
                       : [
-                          <MenuItem
-                            key="31"
-                            value="gemini-3.1-flash-tts-preview"
-                          >
-                            Gemini 3.1 Flash TTS (preview)
+                          <MenuItem key="38" value="gemini-3.8-flash-tts">
+                            Gemini 3.8 Flash TTS
                           </MenuItem>,
-                          <MenuItem
-                            key="25p"
-                            value="gemini-2.5-pro-preview-tts"
-                          >
-                            Gemini 2.5 Pro TTS (preview)
+                          <MenuItem key="38l" value="gemini-3.8-flash-lite-tts">
+                            Gemini 3.8 Flash-Lite TTS
                           </MenuItem>,
                         ]}
                   </Select>

@@ -56,7 +56,7 @@ interface MusicGenerationStatus {
 const MusicGenerator: React.FC = () => {
   const [request, setRequest] = useState<MusicGenerationRequest>({
     prompt: "",
-    model: "lyria-3-pro-preview",
+    model: "lyria-3.5",
     duration: 30,
     genre: "electronic",
     mood: "energetic",
@@ -115,10 +115,8 @@ const MusicGenerator: React.FC = () => {
   ];
 
   const models = [
-    { value: "lyria-3-pro-preview", label: "Lyria 3 Pro (full tracks)" },
-    { value: "lyria-3-clip-preview", label: "Lyria 3 Clip (~30s)" },
-    { value: "lyria-2.0-music-generation", label: "Legacy id → Lyria 3 Pro" },
-    { value: "lyria-1.0-music-generation", label: "Legacy id → Lyria 3 Clip" },
+    { value: "lyria-3.5", label: "Lyria 3.5 (full songs, default)" },
+    { value: "lyria-3-clip-preview", label: "Lyria 3 Clip (fixed 30s)" },
   ];
 
   const handleGenerate = async () => {

@@ -31,7 +31,7 @@ interface OmniOutput {
 
 const OmniGenerator: React.FC = () => {
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("gemini-omni-flash");
+  const [model, setModel] = useState("gemini-omni-1.1-flash");
   const [duration, setDuration] = useState(10);
   const [aspectRatio, setAspectRatio] = useState("16:9");
   const [imageUrls, setImageUrls] = useState("");
@@ -140,8 +140,8 @@ const OmniGenerator: React.FC = () => {
                     label="Model"
                     onChange={(e) => setModel(e.target.value)}
                   >
-                    <MenuItem value="gemini-omni-flash">
-                      Gemini Omni Flash
+                    <MenuItem value="gemini-omni-1.1-flash">
+                      Gemini Omni 1.1 Flash
                     </MenuItem>
                   </Select>
                 </FormControl>
