@@ -9,6 +9,7 @@ from functools import lru_cache
 
 from google_ai_mcp.chat_client import ChatClient, create_chat_client
 from google_ai_mcp.embeddings_client import EmbeddingsClient, create_embeddings_client
+from google_ai_mcp.genie_client import GenieClient, create_genie_client
 from google_ai_mcp.imagen_client import ImagenClient, create_imagen_client
 from google_ai_mcp.lyria_client import LyriaClient, create_lyria_client
 from google_ai_mcp.omni_client import OmniClient, create_omni_client
@@ -93,6 +94,15 @@ def _omni_client_cache(api_key: str, project_id: str) -> OmniClient:
     return create_omni_client(api_key or None, project_id or None)
 
 
+@lru_cache(maxsize=1)
+def _genie_client_cache(api_key: str, model_id: str) -> GenieClient:
+    return create_genie_client(api_key or None, model_id or None)
+
+
+def get_genie_client() -> GenieClient:
+    return _genie_client_cache(resolve_api_key(), os.getenv("GENIE_MODEL_ID", "").strip())
+
+
 def get_chat_client() -> ChatClient:
     return _chat_client_cache(resolve_api_key())
 
@@ -129,3 +139,4 @@ def refresh_cached_clients() -> None:
     _embeddings_client_cache.cache_clear()
     _speech_client_cache.cache_clear()
     _omni_client_cache.cache_clear()
+    _genie_client_cache.cache_clear()

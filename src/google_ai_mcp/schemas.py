@@ -13,7 +13,7 @@ class VideoGenerationRequest(BaseModel):
     duration: int = Field(8, description="Duration of the video in seconds")
     resolution: str = Field("1920x1080", description="Video resolution (e.g., 1920x1080)")
     client_id: str | None = Field(None, description="Optional client ID for tracking")
-    model: str = Field("veo-3.1-preview-002", description="Veo model to use")
+    model: str = Field("veo-3.1-generate-001", description="Veo model to use (Vertex GA)")
     aspect_ratio: str = Field("16:9", description="Video aspect ratio")
     num_videos: int = Field(1, description="Number of videos to generate (1-4)")
 
@@ -32,7 +32,9 @@ class VideoGenerationStatus(BaseModel):
 
 class ImageGenerationRequest(BaseModel):
     prompt: str = Field(..., description="The prompt for image generation")
-    model: str = Field("nano-banana-pro", description="Nano Banana Pro model to use")
+    model: str = Field(
+        "gemini-nano-banana-2.1", description="Image model (gemini-nano-banana-2.1, gemini-3.1-flash-image, gemini-3-pro-image)"
+    )
     aspect_ratio: str = Field("1:1", description="Image aspect ratio")
     num_images: int = Field(1, description="Number of images to generate (1-4)")
     client_id: str | None = Field(None, description="Optional client ID for tracking")
@@ -40,7 +42,7 @@ class ImageGenerationRequest(BaseModel):
 
 class MusicGenerationRequest(BaseModel):
     prompt: str = Field(..., description="The prompt for music generation")
-    model: str = Field("lyria-3-pro-preview", description="Lyria model (e.g. lyria-3-pro-preview, lyria-3-clip-preview)")
+    model: str = Field("lyria-3.5", description="Lyria model (lyria-3.5 full songs, lyria-3-clip-preview 30s clips)")
     num_tracks: int = Field(1, description="Number of tracks to generate (1-4)")
     client_id: str | None = Field(None, description="Optional client ID for tracking")
 
@@ -60,8 +62,8 @@ class BatchEmbeddingRequest(BaseModel):
 class TtsRequest(BaseModel):
     text: str = Field(..., description="Text to speak (style cues like 'Say cheerfully: …' work well)")
     model: str = Field(
-        "gemini-3.1-flash-tts-preview",
-        description="Gemini TTS model (3.1 Flash TTS preview or 2.5 Pro preview TTS)",
+        "gemini-3.8-flash-tts",
+        description="Gemini TTS model (gemini-3.8-flash-tts or gemini-3.8-flash-lite-tts)",
     )
     voice_name: str = Field("Kore", description="Prebuilt voice name (e.g. Kore, Puck, Charon)")
     sample_rate: int = Field(24000, description="PCM sample rate for WAV wrapper (default 24000)")
@@ -69,7 +71,7 @@ class TtsRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     prompt: str = Field(..., description="The prompt for chat generation")
-    model: str = Field("gemini-3.1-pro-preview", description="Chat model to use")
+    model: str = Field("gemini-3.8-flash", description="Chat model to use")
     persona: str | None = Field(None, description="Optional persona/system prompt")
     client_id: str | None = Field(None, description="Optional client ID for tracking")
     images: list[str] | None = Field(

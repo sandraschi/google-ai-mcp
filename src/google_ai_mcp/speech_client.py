@@ -1,8 +1,13 @@
 """
 Gemini speech: native TTS (generateContent + AUDIO) and helpers for Live API.
 
-TTS uses dedicated preview models (e.g. gemini-3.1-flash-tts-preview) per
+TTS uses the Gemini 3.8 TTS models (GA Sep 2026) via generateContent + AUDIO:
+  gemini-3.8-flash-tts       flagship, studio-grade, long-form
+  gemini-3.8-flash-lite-tts  fast/cheap, official replacement for gemini-3.1-flash-tts-preview
 https://ai.google.dev/gemini-api/docs/speech-generation
+
+Not implemented here (yet): the Voices endpoint (/v1beta/voices) for voice design /
+replication. A designed voice id (voice_...) can still be passed as voice_name.
 """
 
 from __future__ import annotations
@@ -20,22 +25,50 @@ from google.genai import types
 
 logger = logging.getLogger(__name__)
 
-# Gemini 3.1 line TTS (preview). "Pro-grade" TTS remains gemini-2.5-pro-preview-tts per Google model list.
-DEFAULT_TTS_MODEL = "gemini-3.1-flash-tts-preview"
+DEFAULT_TTS_MODEL = "gemini-3.8-flash-tts"
+TTS_LITE_MODEL = "gemini-3.8-flash-lite-tts"
 DEFAULT_TTS_VOICE = "Kore"
 
-DEFAULT_LIVE_MODEL = "gemini-live-2.5-flash-preview"
+# gemini-live-2.5-flash-preview and gemini-2.0-flash-live-001 shut down Dec 9 2025.
+DEFAULT_LIVE_MODEL = "gemini-3.8-live"
 
 TTS_MODELS: dict[str, str] = {
-    DEFAULT_TTS_MODEL: "Gemini 3.1 Flash TTS (preview, recommended)",
-    "gemini-2.5-pro-preview-tts": "Gemini 2.5 Pro TTS (preview, higher quality)",
-    "gemini-2.5-flash-preview-tts": "Gemini 2.5 Flash TTS (preview)",
+    DEFAULT_TTS_MODEL: "Gemini 3.8 Flash TTS (GA, default, highest quality)",
+    TTS_LITE_MODEL: "Gemini 3.8 Flash-Lite TTS (GA, fast, low cost)",
+}
+
+# Older TTS ids -> 3.8 replacements (Google's recommended mapping).
+_TTS_ALIASES: dict[str, str] = {
+    "gemini-3.1-flash-tts-preview": TTS_LITE_MODEL,
+    "gemini-2.5-flash-preview-tts": TTS_LITE_MODEL,
+    "gemini-2.5-flash-tts": TTS_LITE_MODEL,
+    "gemini-2.5-flash-lite-preview-tts": TTS_LITE_MODEL,
+    "gemini-2.5-pro-preview-tts": DEFAULT_TTS_MODEL,
+    "gemini-2.5-pro-tts": DEFAULT_TTS_MODEL,
 }
 
 LIVE_MODELS: dict[str, str] = {
-    DEFAULT_LIVE_MODEL: "Gemini Live 2.5 Flash (preview, text + audio capable)",
-    "gemini-2.0-flash-live-preview-04-09": "Gemini 2.0 Flash Live (preview)",
+    DEFAULT_LIVE_MODEL: "Gemini 3.8 Live (GA, low-latency audio-to-audio)",
 }
+
+
+def resolve_tts_model(model: str | None) -> str:
+    if not model:
+        return DEFAULT_TTS_MODEL
+    m = model.strip()
+    return _TTS_ALIASES.get(m.lower(), m)
+
+
+def _rate_from_mime(mime: str | None, fallback: int) -> int:
+    """Parse 'audio/L16;codec=pcm;rate=24000' style MIME types."""
+    if not mime:
+        return fallback
+    for part in mime.split(";"):
+        key, _, val = part.strip().partition("=")
+        if key.lower() == "rate" and val.isdigit():
+            return int(val)
+    return fallback
+
 
 TTS_VOICES = [
     "Kore",
@@ -133,6 +166,7 @@ class SpeechClient:
     ) -> dict[str, Any]:
         if not text.strip():
             return {"success": False, "error": "Text is empty"}
+        model = resolve_tts_model(model)
         if self.mock_mode or not self._client:
             wav = pcm16_mono_to_wav(b"\x00\x00" * int(sample_rate * 0.25), sample_rate)
             return {
@@ -163,20 +197,29 @@ class SpeechClient:
 
         try:
             response = await asyncio.to_thread(_call)
-            pcm, _mime = _extract_audio_pcm(response)
-            if not pcm:
+            raw, mime = _extract_audio_pcm(response)
+            if not raw:
                 return {
                     "success": False,
                     "error": "No audio in response. Check model id and billing.",
                 }
-            wav = pcm16_mono_to_wav(pcm, sample_rate)
+            mime_l = (mime or "").lower()
+            if "wav" in mime_l or "mpeg" in mime_l or "mp3" in mime_l or "ogg" in mime_l:
+                # Already a container format: pass through untouched.
+                out_mime = mime.split(";")[0]
+                audio = raw
+                rate = sample_rate
+            else:
+                rate = _rate_from_mime(mime, sample_rate)
+                audio = pcm16_mono_to_wav(raw, rate)
+                out_mime = "audio/wav"
             return {
                 "success": True,
-                "mime": "audio/wav",
-                "audio_base64": base64.b64encode(wav).decode("ascii"),
+                "mime": out_mime,
+                "audio_base64": base64.b64encode(audio).decode("ascii"),
                 "model": model,
                 "voice_name": voice_name,
-                "sample_rate": sample_rate,
+                "sample_rate": rate,
             }
         except Exception as exc:
             logger.exception("TTS failed")

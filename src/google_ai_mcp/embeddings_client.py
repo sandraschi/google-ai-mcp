@@ -7,8 +7,12 @@ Migration note (Feb 2026):
   OLD: import google.generativeai as genai / genai.embed_content()
   NEW: from google import genai / client.models.embed_content()
 
-Note: text-embedding-004 was shut down Jan 14 2026.
-Use gemini-embedding-001 (current stable).
+Models (Oct 2026):
+  gemini-embedding-001  default, text-only, shutdown scheduled May 14 2028.
+  gemini-embedding-2    GA Apr 22 2026, multimodal (text/image/video/audio/docs), 8K text input.
+                        Vector space is NOT compatible with 001: switching means re-embedding
+                        the whole corpus, so it is opt-in per request, not the default.
+  text-embedding-004 / 005 and embedding-2-preview are shut down.
 """
 
 from __future__ import annotations
@@ -23,12 +27,30 @@ from google.genai import types
 
 logger = logging.getLogger(__name__)
 
-# text-embedding-004 was shut down Jan 14 2026
 DEFAULT_EMBEDDING_MODEL = "gemini-embedding-001"
+GEMINI_EMBEDDING_2 = "gemini-embedding-2"
 
 AVAILABLE_MODELS = {
-    "gemini-embedding-001": "Gemini Embedding 001 (current, 3072 dims, multilingual)",
+    DEFAULT_EMBEDDING_MODEL: "Gemini Embedding 001 (default, text, 3072 dims, multilingual)",
+    GEMINI_EMBEDDING_2: "Gemini Embedding 2 (GA, multimodal, 8K input; NOT vector-compatible with 001)",
 }
+
+# Retired ids -> 001 so stored vectors stay in the same space as before.
+_RETIRED_EMBEDDINGS: dict[str, str] = {
+    "text-embedding-004": DEFAULT_EMBEDDING_MODEL,
+    "text-embedding-005": DEFAULT_EMBEDDING_MODEL,
+    "text-multilingual-embedding-002": DEFAULT_EMBEDDING_MODEL,
+    "embedding-001": DEFAULT_EMBEDDING_MODEL,
+    "embedding-2-preview": GEMINI_EMBEDDING_2,
+    "gemini-embedding-2-preview": GEMINI_EMBEDDING_2,
+}
+
+
+def resolve_embedding_model(model: str | None) -> str:
+    if not model:
+        return DEFAULT_EMBEDDING_MODEL
+    m = model.strip()
+    return _RETIRED_EMBEDDINGS.get(m.lower(), m)
 
 
 class EmbeddingsClient:
@@ -74,6 +96,7 @@ class EmbeddingsClient:
         task_type: str | None = None,
     ) -> dict[str, Any]:
         """Embed a single text string."""
+        model = resolve_embedding_model(model)
         if self.mock_mode:
             return self._mock_embedding(text, model)
 
@@ -104,6 +127,7 @@ class EmbeddingsClient:
         task_type: str | None = None,
     ) -> dict[str, Any]:
         """Embed multiple texts."""
+        model = resolve_embedding_model(model)
         if self.mock_mode:
             results = [self._mock_embedding(t, model) for t in texts]
             return {

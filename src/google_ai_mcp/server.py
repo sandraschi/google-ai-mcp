@@ -32,6 +32,7 @@ from pydantic import Field
 from google_ai_mcp.clients_registry import (
     get_chat_client,
     get_embeddings_client,
+    get_genie_client,
     get_imagen_client,
     get_lyria_client,
     get_omni_client,
@@ -40,7 +41,7 @@ from google_ai_mcp.clients_registry import (
     refresh_cached_clients,
 )
 
-# ── Structured logging ────────────────────────────────────────────────────────
+# â”€â”€ Structured logging â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 structlog.configure(
     processors=[
@@ -70,7 +71,8 @@ logger = structlog.get_logger(__name__)
 
 GOOGLE_AI_MCP_INSTRUCTIONS = """You are Google-AI-MCP (FastMCP 3.2): a gateway to Google AI cloud services.
 Use portmanteau tools: google_ai_chat, google_ai_image, google_ai_video, google_ai_omni,
-google_ai_music, google_ai_speech, google_ai_embeddings, google_ai_status, google_ai_world.
+google_ai_music, google_ai_speech, google_ai_embeddings, google_ai_status, google_ai_world, google_ai_genie.
+google_ai_genie (Genie 4) is waitlist-only: use operation='status' or 'probe'; generate only works once GENIE_MODEL_ID is set.
 Prefer google_ai_status() before any generation to check which services are connected.
 Call list_models via the operation parameter on each service tool.
 For multimodal chat, pass image URLs in the images parameter.
@@ -87,7 +89,7 @@ class GoogleAIMCP:
     def __init__(self) -> None:
         _mcp_kwargs: dict[str, Any] = {
             "name": "Google-AI-MCP",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "instructions": GOOGLE_AI_MCP_INSTRUCTIONS,
         }
         if os.getenv("ANTHROPIC_API_KEY"):
@@ -95,7 +97,7 @@ class GoogleAIMCP:
                 from fastmcp.client.sampling.handlers.anthropic import AnthropicSamplingHandler
 
                 _mcp_kwargs["sampling_handler"] = AnthropicSamplingHandler(
-                    default_model=os.getenv("ANTHROPIC_SAMPLING_MODEL", "claude-sonnet-4-20250514"),
+                    default_model=os.getenv("ANTHROPIC_SAMPLING_MODEL", "claude-sonnet-5-5"),
                 )
                 _mcp_kwargs["sampling_handler_behavior"] = "fallback"
             except ImportError:
@@ -108,13 +110,15 @@ class GoogleAIMCP:
     def _register_tools(self) -> None:
         """Register all Google AI MCP tools with the FastMCP server."""
 
-        # ── google_ai_chat ────────────────────────────────────────────────────
+        # â”€â”€ google_ai_chat â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_chat(
             operation: Annotated[str, Field(description="Operation: 'chat' (text/multimodal chat) or 'list_models'.")] = "chat",
             prompt: Annotated[str | None, Field(description="Text prompt for chat mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'gemini-2.5-pro', 'gemma-3-27b').")] = None,
+            model: Annotated[
+                str | None, Field(description="Model ID override (default gemini-3.8-flash; e.g. 'gemini-4-argon', 'gemma-4-31b-it').")
+            ] = None,
             persona: Annotated[str | None, Field(description="System prompt / persona prefix for the model.")] = None,
             images: Annotated[list[str] | None, Field(description="List of image URLs for multimodal chat.")] = None,
             temperature: Annotated[float, Field(description="Sampling temperature 0.0-2.0.", ge=0.0, le=2.0)] = 0.7,
@@ -128,16 +132,16 @@ class GoogleAIMCP:
             ## Examples
             google_ai_chat(prompt="Explain quantum computing in 3 sentences")
             google_ai_chat(operation="list_models")
-            google_ai_chat(prompt="What is in this image?", images=["https://example.com/photo.jpg"], model="gemini-2.5-pro")
+            google_ai_chat(prompt="What is in this image?", images=["https://example.com/photo.jpg"], model="gemini-4-argon")
             """
             client = get_chat_client()
-            chat_models = getattr(client, "MODELS", ["gemini-2.5-pro", "gemini-2.0-flash", "gemini-2.5-flash", "gemma-3-27b"])
+            chat_models = client.get_available_models()
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available chat models: {len(chat_models)}",
-                    "data": {"models": chat_models},
+                    "data": {"models": list(chat_models.keys()), "labels": chat_models},
                 }
 
             if not prompt:
@@ -152,26 +156,31 @@ class GoogleAIMCP:
                     temperature=temperature,
                     max_tokens=max_tokens,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Chat failed: {result.get('error', 'unknown error')}", "data": result}
                 return {
                     "success": True,
                     "message": f"Chat response from {result.get('model', 'gemini')}",
-                    "data": {"response": result.get("text", ""), "model": result.get("model", model or "gemini-2.0-flash")},
+                    "data": {"response": result.get("response", ""), "model": result.get("model"), "mock": result.get("mock", False)},
                 }
             except Exception as exc:
                 logger.error("chat_failed", error=str(exc))
                 return {"success": False, "message": f"Chat failed: {exc!s}", "data": {}}
 
-        # ── google_ai_image ───────────────────────────────────────────────────
+        # â”€â”€ google_ai_image â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_image(
             operation: Annotated[str, Field(description="Operation: 'generate' (create images) or 'list_models'.")] = "generate",
             prompt: Annotated[str | None, Field(description="Image description for generate mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'imagen-4.0-ultra-generate-001').")] = None,
+            model: Annotated[
+                str | None,
+                Field(description="Model ID override (default gemini-nano-banana-2.1; 'gemini-3-pro-image' for Nano Banana Pro)."),
+            ] = None,
             aspect_ratio: Annotated[str, Field(description="Aspect ratio: '1:1', '16:9', '9:16', '4:3', '3:4'.")] = "1:1",
-            num_images: Annotated[int, Field(description="Number of images to generate.", ge=1, le=8)] = 1,
+            num_images: Annotated[int, Field(description="Number of images to generate (one API call each).", ge=1, le=4)] = 1,
         ) -> dict[str, Any]:
-            """Generate images with Nano Banana 2 / Imagen Pro.
+            """Generate images with Nano Banana 2.1 / Nano Banana 2 / Nano Banana Pro.
 
             ## Return Format
             {success, message, data: {images: [urls], model: str}} or {success, message, data: {models: list}}
@@ -182,13 +191,13 @@ class GoogleAIMCP:
             google_ai_image(prompt="A serene Japanese garden at golden hour", aspect_ratio="16:9", num_images=4)
             """
             client = get_imagen_client()
-            image_models = getattr(client, "MODELS", ["imagen-4.0-ultra-generate-001", "imagen-4.0-generate-001", "nano-banana-2"])
+            image_models = client.get_available_models()
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available image models: {len(image_models)}",
-                    "data": {"models": image_models},
+                    "data": {"models": list(image_models.keys()), "labels": image_models},
                 }
 
             if not prompt:
@@ -201,31 +210,32 @@ class GoogleAIMCP:
                     aspect_ratio=aspect_ratio,
                     num_images=num_images,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Image generation failed: {result.get('error', 'unknown error')}", "data": result}
                 images = result.get("images", [])
                 return {
                     "success": True,
                     "message": f"Generated {len(images)} image(s)",
-                    "data": {
-                        "images": images,
-                        "model": result.get("model", model or "nano-banana-2"),
-                    },
+                    "data": {"images": images, "model": result.get("model"), "mock": result.get("mock", False)},
                 }
             except Exception as exc:
                 logger.error("image_generation_failed", error=str(exc))
                 return {"success": False, "message": f"Image generation failed: {exc!s}", "data": {}}
 
-        # ── google_ai_video ───────────────────────────────────────────────────
+        # â”€â”€ google_ai_video â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_video(
             operation: Annotated[str, Field(description="Operation: 'generate' (create videos) or 'list_models'.")] = "generate",
             prompt: Annotated[str | None, Field(description="Video description for generate mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'veo-3.1-generate-preview').")] = None,
-            duration: Annotated[int, Field(description="Video duration in seconds.", ge=4, le=120)] = 8,
+            model: Annotated[
+                str | None, Field(description="Model ID override (default veo-3.1-generate-001; 'veo-3.1-fast-generate-001').")
+            ] = None,
+            duration: Annotated[int, Field(description="Video duration in seconds: 4, 6 or 8 (others snap to nearest).", ge=4, le=8)] = 8,
             aspect_ratio: Annotated[str, Field(description="Aspect ratio: '16:9' or '9:16'.")] = "16:9",
             num_videos: Annotated[int, Field(description="Number of videos to generate.", ge=1, le=4)] = 1,
         ) -> dict[str, Any]:
-            """Generate videos with Veo 3.1.
+            """Generate videos with Veo 3.1 on Vertex AI (needs GOOGLE_CLOUD_PROJECT). With only an API key, use google_ai_omni.
 
             ## Return Format
             {success, message, data: {videos: [urls], model: str, duration: int}} or {success, message, data: {models: list}}
@@ -233,16 +243,16 @@ class GoogleAIMCP:
             ## Examples
             google_ai_video(prompt="A drone flyover of a futuristic city at sunrise")
             google_ai_video(operation="list_models")
-            google_ai_video(prompt="A puppy chasing butterflies in slow motion", duration=12, aspect_ratio="9:16")
+            google_ai_video(prompt="A puppy chasing butterflies in slow motion", duration=6, aspect_ratio="9:16")
             """
             client = get_veo_client()
-            video_models = getattr(client, "MODELS", ["veo-3.1-generate-preview", "veo-3.0-generate-preview"])
+            video_models = client.get_available_models()
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available video models: {len(video_models)}",
-                    "data": {"models": video_models},
+                    "data": {"models": list(video_models.keys()), "labels": video_models},
                 }
 
             if not prompt:
@@ -256,36 +266,50 @@ class GoogleAIMCP:
                     aspect_ratio=aspect_ratio,
                     num_videos=num_videos,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Video generation failed: {result.get('error', 'unknown error')}", "data": result}
                 videos = result.get("videos", [])
+                meta = result.get("metadata", {})
                 return {
                     "success": True,
                     "message": f"Generated {len(videos)} video(s)",
                     "data": {
                         "videos": videos,
-                        "model": result.get("model", model or "veo-3.1-generate-preview"),
-                        "duration": duration,
+                        "model": meta.get("model"),
+                        "duration": meta.get("duration", duration),
+                        "mock_mode": result.get("mock_mode", False),
                     },
                 }
             except Exception as exc:
                 logger.error("video_generation_failed", error=str(exc))
                 return {"success": False, "message": f"Video generation failed: {exc!s}", "data": {}}
 
-        # ── google_ai_omni ────────────────────────────────────────────────────
+        # â”€â”€ google_ai_omni â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_omni(
             operation: Annotated[str, Field(description="Operation: 'generate' (multimodal video) or 'list_models'.")] = "generate",
             prompt: Annotated[str | None, Field(description="Text prompt / edit instruction for generate mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'gemini-omni-flash').")] = None,
-            duration: Annotated[int, Field(description="Video duration in seconds (max 10).", ge=1, le=10)] = 10,
+            model: Annotated[str | None, Field(description="Model ID override (default gemini-omni-1.1-flash).")] = None,
+            duration: Annotated[int, Field(description="Target video length in seconds (3-10, steered via prompt).", ge=3, le=10)] = 8,
             aspect_ratio: Annotated[str, Field(description="Aspect ratio: '16:9' or '9:16'.")] = "16:9",
-            image_urls: Annotated[list[str] | None, Field(description="Reference image URLs.")] = None,
-            audio_urls: Annotated[list[str] | None, Field(description="Reference audio URLs.")] = None,
-            video_urls: Annotated[list[str] | None, Field(description="Reference video URLs.")] = None,
-            edit_history: Annotated[list[str] | None, Field(description="Prior conversational edit turns.")] = None,
-            num_outputs: Annotated[int, Field(description="Number of outputs to generate.", ge=1, le=4)] = 1,
+            resolution: Annotated[str, Field(description="Output resolution: '360p', '720p', '1080p', '4k'.")] = "720p",
+            image_urls: Annotated[
+                list[str] | None, Field(description="Reference images: local paths, data URLs or Files API URIs.")
+            ] = None,
+            audio_urls: Annotated[
+                list[str] | None, Field(description="Ignored: audio references are not supported by the Omni API.")
+            ] = None,
+            video_urls: Annotated[
+                list[str] | None, Field(description="Source/reference videos (max 3; editing uploads not available in EEA/CH/UK).")
+            ] = None,
+            edit_history: Annotated[list[str] | None, Field(description="Prior conversational edit turns (appended to prompt).")] = None,
+            previous_interaction_id: Annotated[
+                str | None, Field(description="Edit a previously generated video: pass an interaction_id from an earlier result.")
+            ] = None,
+            num_outputs: Annotated[int, Field(description="Number of outputs (one API call each).", ge=1, le=4)] = 1,
         ) -> dict[str, Any]:
-            """Generate video with Gemini Omni - any input modality to video output.
+            """Generate or edit video with Gemini Omni 1.1 Flash (Interactions API, needs GOOGLE_API_KEY).
 
             ## Return Format
             {success, message, data: {outputs: [urls], model: str}} or {success, message, data: {models: list}}
@@ -320,14 +344,20 @@ class GoogleAIMCP:
                     edit_history=edit_history,
                     num_outputs=num_outputs,
                     output_path="uploads/omni",
+                    resolution=resolution,
+                    previous_interaction_id=previous_interaction_id,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Omni generation failed: {result.get('error', 'unknown error')}", "data": result}
                 outputs = result.get("outputs", [])
                 return {
-                    "success": result.get("success", False),
+                    "success": True,
                     "message": result.get("message", f"Generated {len(outputs)} Omni output(s)"),
                     "data": {
                         "outputs": outputs,
-                        "model": result.get("metadata", {}).get("model", model or "gemini-omni-flash"),
+                        "interaction_ids": result.get("interaction_ids", []),
+                        "model": result.get("metadata", {}).get("model"),
+                        "warnings": result.get("warnings", []),
                         "mock_mode": result.get("mock_mode", False),
                     },
                 }
@@ -335,17 +365,19 @@ class GoogleAIMCP:
                 logger.error("omni_generation_failed", error=str(exc))
                 return {"success": False, "message": f"Omni generation failed: {exc!s}", "data": {}}
 
-        # ── google_ai_music ───────────────────────────────────────────────────
+        # â”€â”€ google_ai_music â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_music(
             operation: Annotated[str, Field(description="Operation: 'generate' (create music) or 'list_models'.")] = "generate",
             prompt: Annotated[str | None, Field(description="Music description for generate mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'lyria-3').")] = None,
+            model: Annotated[
+                str | None, Field(description="Model ID override (default lyria-3.5; 'lyria-3-clip-preview' for fixed 30s clips).")
+            ] = None,
             duration: Annotated[int, Field(description="Track duration in seconds.", ge=10, le=300)] = 30,
             num_tracks: Annotated[int, Field(description="Number of tracks to generate.", ge=1, le=4)] = 1,
         ) -> dict[str, Any]:
-            """Generate music with Lyria 3.
+            """Generate music with Lyria 3.5 (full songs) or Lyria 3 Clip (30s).
 
             ## Return Format
             {success, message, data: {tracks: [urls], model: str, duration: int}} or {success, message, data: {models: list}}
@@ -356,13 +388,13 @@ class GoogleAIMCP:
             google_ai_music(prompt="Epic orchestral battle theme with choir", duration=120)
             """
             client = get_lyria_client()
-            music_models = getattr(client, "MODELS", ["lyria-3", "music-generator-001"])
+            music_models = client.get_available_models()
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available music models: {len(music_models)}",
-                    "data": {"models": music_models},
+                    "data": {"models": list(music_models.keys()), "labels": music_models},
                 }
 
             if not prompt:
@@ -375,30 +407,37 @@ class GoogleAIMCP:
                     duration=duration,
                     num_tracks=num_tracks,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Music generation failed: {result.get('error', 'unknown error')}", "data": result}
                 tracks = result.get("tracks", [])
+                meta = result.get("metadata", {})
                 return {
                     "success": True,
                     "message": f"Generated {len(tracks)} music track(s)",
                     "data": {
                         "tracks": tracks,
-                        "model": result.get("model", model or "lyria-3"),
-                        "duration": duration,
+                        "model": meta.get("model"),
+                        "duration": meta.get("duration", duration),
+                        "mock_mode": result.get("mock_mode", False),
                     },
                 }
             except Exception as exc:
                 logger.error("music_generation_failed", error=str(exc))
                 return {"success": False, "message": f"Music generation failed: {exc!s}", "data": {}}
 
-        # ── google_ai_speech ──────────────────────────────────────────────────
+        # â”€â”€ google_ai_speech â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_speech(
             operation: Annotated[str, Field(description="Operation: 'tts' (text-to-speech), 'list_voices', or 'list_models'.")] = "tts",
             text: Annotated[str | None, Field(description="Text to speak for tts mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'chirp-3-hd-voice' / 'chirp-3').")] = None,
+            model: Annotated[
+                str | None,
+                Field(description="Model ID override (default gemini-3.8-flash-tts; 'gemini-3.8-flash-lite-tts' for fast/cheap)."),
+            ] = None,
             voice_name: Annotated[str, Field(description="Voice name for TTS.")] = "Kore",
         ) -> dict[str, Any]:
-            """Text-to-speech with Google Cloud TTS - Chirp 3 HD voices.
+            """One-shot text-to-speech with Gemini 3.8 TTS (prebuilt voices, or a designed voice id voice_...).
 
             ## Return Format
             {success, message, data: {audio_url: str, voice: str, model: str}} or {success, message, data: {voices/models: list}}
@@ -406,16 +445,16 @@ class GoogleAIMCP:
             ## Examples
             google_ai_speech(text="Hello, this is a test of Google Cloud TTS.")
             google_ai_speech(operation="list_voices")
-            google_ai_speech(text="Bonjour le monde", voice_name="Fenrir", model="chirp-3-hd-voice")
+            google_ai_speech(text="Bonjour le monde", voice_name="Fenrir", model="gemini-3.8-flash-lite-tts")
             """
             client = get_speech_client()
-            speech_models = getattr(client, "MODELS", ["chirp-3-hd-voice", "chirp-3", "chirp-3-voice"])
+            speech_models = client.get_status().get("tts_models", {})
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available speech models: {len(speech_models)}",
-                    "data": {"models": speech_models},
+                    "data": {"models": list(speech_models.keys()), "labels": speech_models},
                 }
 
             if operation == "list_voices":
@@ -439,28 +478,35 @@ class GoogleAIMCP:
                     model=model,
                     voice_name=voice_name,
                 )
-                audio_base64 = result.get("audio_base64", "")
+                if not result.get("success"):
+                    return {"success": False, "message": f"TTS failed: {result.get('error', 'unknown error')}", "data": result}
                 return {
                     "success": True,
                     "message": f"TTS generated with voice '{voice_name}'",
                     "data": {
-                        "audio_base64": audio_base64,
+                        "audio_base64": result.get("audio_base64", ""),
                         "voice": voice_name,
                         "mime": result.get("mime", "audio/wav"),
-                        "model": result.get("model", model or "chirp-3-hd-voice"),
+                        "model": result.get("model"),
+                        "mock": result.get("mock", False),
                     },
                 }
             except Exception as exc:
                 logger.error("tts_failed", error=str(exc))
                 return {"success": False, "message": f"TTS failed: {exc!s}", "data": {}}
 
-        # ── google_ai_embeddings ──────────────────────────────────────────────
+        # â”€â”€ google_ai_embeddings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_embeddings(
             operation: Annotated[str, Field(description="Operation: 'embed' (generate embedding vector) or 'list_models'.")] = "embed",
             text: Annotated[str | None, Field(description="Text to embed for embed mode.")] = None,
-            model: Annotated[str | None, Field(description="Model ID override (e.g. 'text-embedding-005').")] = None,
+            model: Annotated[
+                str | None,
+                Field(
+                    description="Model ID override (default gemini-embedding-001; 'gemini-embedding-2' is NOT vector-compatible with 001)."
+                ),
+            ] = None,
             task_type: Annotated[str | None, Field(description="Task type: RETRIEVAL_QUERY, SEMANTIC_SIMILARITY, CLASSIFICATION.")] = None,
         ) -> dict[str, Any]:
             """Generate text embeddings with Google's embedding models.
@@ -474,13 +520,13 @@ class GoogleAIMCP:
             google_ai_embeddings(text="Machine learning fundamentals", task_type="RETRIEVAL_QUERY")
             """
             client = get_embeddings_client()
-            embed_models = getattr(client, "MODELS", ["text-embedding-005", "text-embedding-004", "text-multilingual-embedding-002"])
+            embed_models = client.get_available_models()
 
             if operation == "list_models":
                 return {
                     "success": True,
                     "message": f"Available embedding models: {len(embed_models)}",
-                    "data": {"models": embed_models},
+                    "data": {"models": list(embed_models.keys()), "labels": embed_models},
                 }
 
             if not text:
@@ -492,6 +538,8 @@ class GoogleAIMCP:
                     model=model,
                     task_type=task_type,
                 )
+                if not result.get("success"):
+                    return {"success": False, "message": f"Embedding failed: {result.get('error', 'unknown error')}", "data": result}
                 embedding_vector = result.get("embedding", [])
                 return {
                     "success": True,
@@ -499,14 +547,15 @@ class GoogleAIMCP:
                     "data": {
                         "embedding": embedding_vector,
                         "dimensions": len(embedding_vector),
-                        "model": result.get("model", model or "text-embedding-005"),
+                        "model": result.get("model"),
+                        "mock": result.get("mock", False),
                     },
                 }
             except Exception as exc:
                 logger.error("embedding_failed", error=str(exc))
                 return {"success": False, "message": f"Embedding generation failed: {exc!s}", "data": {}}
 
-        # ── google_ai_status ──────────────────────────────────────────────────
+        # â”€â”€ google_ai_status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_status() -> dict[str, Any]:
@@ -525,12 +574,13 @@ class GoogleAIMCP:
 
             for _name, _client_getter, _label in [
                 ("chat", get_chat_client, "Gemini/Gemma Chat"),
-                ("imagen", get_imagen_client, "Nano Banana / Imagen"),
-                ("veo", get_veo_client, "Veo 3.1 Video"),
-                ("omni", get_omni_client, "Gemini Omni Flash"),
-                ("lyria", get_lyria_client, "Lyria 3 Music"),
-                ("speech", get_speech_client, "Google Cloud TTS"),
-                ("embeddings", get_embeddings_client, "Text Embeddings"),
+                ("imagen", get_imagen_client, "Nano Banana 2.1 / 2 / Pro"),
+                ("veo", get_veo_client, "Veo 3.1 Video (Vertex)"),
+                ("omni", get_omni_client, "Gemini Omni 1.1 Flash"),
+                ("lyria", get_lyria_client, "Lyria 3.5 Music"),
+                ("speech", get_speech_client, "Gemini 3.8 TTS"),
+                ("embeddings", get_embeddings_client, "Embeddings"),
+                ("genie", get_genie_client, "Genie 4 (waitlist)"),
             ]:
                 try:
                     client = _client_getter()
@@ -545,11 +595,11 @@ class GoogleAIMCP:
             return {
                 "success": True,
                 "server": "Google-AI-MCP",
-                "version": "0.1.0",
+                "version": "0.2.0",
                 "services": services,
                 "total_services": len(services),
                 "available_services": available_count,
-                "tools_exposed": 10,
+                "tools_exposed": 11,
                 "tools": [
                     "google_ai_chat",
                     "google_ai_image",
@@ -560,12 +610,13 @@ class GoogleAIMCP:
                     "google_ai_embeddings",
                     "google_ai_status",
                     "google_ai_world",
+                    "google_ai_genie",
                     "show_google_ai_status_card",
                 ],
-                "message": f"Google AI MCP v0.1.0 - {available_count}/{len(services)} services available",
+                "message": f"Google AI MCP v0.2.0 - {available_count}/{len(services)} services available",
             }
 
-        # ── google_ai_world ────────────────────────────────────────────────────
+        # â”€â”€ google_ai_world â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
         @self.mcp.tool()
         async def google_ai_world(
@@ -606,6 +657,49 @@ class GoogleAIMCP:
                     }
             except Exception as exc:
                 return {"success": False, "message": f"LeWM unreachable: {exc!s}", "data": {"hint": "Start lewm-mcp on port 10927"}}
+
+        # -- google_ai_genie ------------------------------------------------
+
+        @self.mcp.tool()
+        async def google_ai_genie(
+            operation: Annotated[
+                str,
+                Field(
+                    description="Operation: 'status' (availability, no network), 'probe' (scan key's models for Genie), 'generate' (experimental)."
+                ),
+            ] = "status",
+            prompt: Annotated[str | None, Field(description="World description for generate.")] = None,
+            image_path: Annotated[str | None, Field(description="Optional local image to seed the world (generate).")] = None,
+        ) -> dict[str, Any]:
+            """Genie 4 world model (Google DeepMind) - SCAFFOLD, research preview / waitlist.
+
+            Genie 4 has no public API yet. 'probe' lists the models your GOOGLE_API_KEY can see
+            and reports any Genie ids; once one appears, set GENIE_MODEL_ID to enable 'generate',
+            whose request shape is a best guess (Interactions API, like Omni) and may need updating.
+            Real-time interactive steering is not implemented.
+
+            ## Return Format
+            {success, message, data}
+
+            ## Examples
+            google_ai_genie()
+            google_ai_genie(operation="probe")
+            google_ai_genie(operation="generate", prompt="A rainy Tokyo alley at night, neon signs, puddles")
+            """
+            client = get_genie_client()
+            if operation == "status":
+                status = client.get_status()
+                return {"success": True, "message": status["message"], "data": status}
+            if operation == "probe":
+                res = await client.probe()
+                return {"success": res["success"], "message": res.get("message") or res.get("error", ""), "data": res}
+            if operation == "generate":
+                if not prompt:
+                    return {"success": False, "message": "prompt is required for generate", "data": {}}
+                res = await client.generate(prompt=prompt, image_path=image_path)
+                msg = f"Genie produced {len(res.get('outputs', []))} output(s)" if res.get("success") else res.get("error", "failed")
+                return {"success": bool(res.get("success")), "message": msg, "data": res}
+            return {"success": False, "message": f"Unknown operation '{operation}'", "data": {}}
 
     def _register_prefab_tools(self) -> None:
         """Register FastMCP 3.2 Prefab UI card tools (app=True)."""
@@ -674,7 +768,7 @@ class GoogleAIMCP:
             return PrefabApp(view=view, title="Google AI MCP Status")
 
 
-# ── Global instance ───────────────────────────────────────────────────────────
+# â”€â”€ Global instance â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 google_ai_mcp = GoogleAIMCP()
 
@@ -720,7 +814,7 @@ def create_app() -> FastAPI:
 
     @app.get("/health")
     async def health():
-        return {"status": "ok", "server": "Google-AI-MCP", "version": "0.1.0"}
+        return {"status": "ok", "server": "Google-AI-MCP", "version": "0.2.0"}
 
     @app.get("/api/status")
     async def api_status():
@@ -747,13 +841,13 @@ def create_app() -> FastAPI:
         return {
             "status": "ok",
             "server": "Google-AI-MCP",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "services": services,
             "available_services": available_count,
             "total_services": len(services),
         }
 
-    # ── Mount REST routes from web.py (if available) ──────────────────────────
+    # â”€â”€ Mount REST routes from web.py (if available) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     try:
         from google_ai_mcp.web import setup_routes
 

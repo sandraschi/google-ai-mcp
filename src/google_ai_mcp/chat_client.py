@@ -25,9 +25,14 @@ from google.genai import types
 
 logger = logging.getLogger(__name__)
 
-# Current recommended chat models (Apr 2026)
-# gemini-3-pro-preview shut down March 9 2026 - migrated to 3.1
-DEFAULT_CHAT_MODEL = "gemini-3.1-pro-preview"
+# Current chat models (Oct 2026).
+# gemini-3.8-flash: GA Sep 2 2026, works on free + paid tiers -> default.
+# gemini-4-argon: GA Oct 13 2026, paid tier only, intro pricing until Nov 30 2026.
+# Shut down / redirected: gemini-2.0-*, gemini-3-pro-preview, gemini-3-flash-preview;
+# gemini-3.7-flash -> 3.8-flash and gemini-3.5-flash -> 3.6-flash redirect server-side.
+# gemini-2.5-* restricted to projects that used them before Sep 2026.
+DEFAULT_CHAT_MODEL = "gemini-3.8-flash"
+GEMINI_4_ARGON = "gemini-4-argon"
 
 # Hosted Gemma on Gemini API - Gemma 4 supersedes Gemma 3; legacy Gemma 3 ids resolve in resolve_chat_model().
 GEMMA4_31B = "gemma-4-31b-it"
@@ -43,21 +48,37 @@ _GEMMA3_TO_GEMMA4: dict[str, str] = {
 }
 
 
-def resolve_chat_model(model: str) -> tuple[str, str]:
-    """Return (api_model_id, user_requested_id). Gemma 3* → Gemma 4 hosted ids."""
-    requested = model.strip()
+# Retired Gemini ids -> current replacement (avoids hard 404s from old configs/UI state).
+_RETIRED_GEMINI: dict[str, str] = {
+    "gemini-2.0-flash": DEFAULT_CHAT_MODEL,
+    "gemini-2.0-flash-001": DEFAULT_CHAT_MODEL,
+    "gemini-2.0-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3-pro-preview": "gemini-3.1-pro-preview",
+    "gemini-3-flash-preview": DEFAULT_CHAT_MODEL,
+    "gemini-3.7-flash": DEFAULT_CHAT_MODEL,
+}
+
+
+def resolve_chat_model(model: str | None) -> tuple[str, str]:
+    """Return (api_model_id, user_requested_id). Gemma 3* -> Gemma 4; retired Gemini ids -> replacement."""
+    requested = (model or DEFAULT_CHAT_MODEL).strip()
     m = requested.lower()
     if m.startswith("gemma-3"):
         resolved = _GEMMA3_TO_GEMMA4.get(m, GEMMA4_31B)
         return resolved, requested
+    if m in _RETIRED_GEMINI:
+        return _RETIRED_GEMINI[m], requested
     return requested, requested
 
 
 AVAILABLE_CHAT_MODELS = {
-    "gemini-3.1-pro-preview": "Gemini 3.1 Pro Preview (latest, recommended)",
-    "gemini-3-flash-preview": "Gemini 3 Flash (fast, cost-effective)",
-    "gemini-2.5-flash": "Gemini 2.5 Flash (stable GA)",
-    "gemini-2.5-pro": "Gemini 2.5 Pro (stable GA)",
+    DEFAULT_CHAT_MODEL: "Gemini 3.8 Flash (GA, default - free + paid tiers)",
+    GEMINI_4_ARGON: "Gemini 4 Argon (GA flagship, paid tier only)",
+    "gemini-3.6-flash": "Gemini 3.6 Flash (GA)",
+    "gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite (GA, cheapest)",
+    "gemini-3.1-pro-preview": "Gemini 3.1 Pro Preview (superseded by Argon)",
+    "gemini-2.5-pro": "Gemini 2.5 Pro (legacy, only for projects with prior usage)",
+    "gemini-2.5-flash": "Gemini 2.5 Flash (legacy, only for projects with prior usage)",
     GEMMA4_31B: "Gemma 4 31B IT (multimodal: text + image on Gemini API)",
     GEMMA4_26B_MOE: "Gemma 4 26B A4B MoE IT (multimodal: text + image on Gemini API)",
     "gemma-3-27b-it": "Legacy Gemma 3 id → Gemma 4 31B IT",

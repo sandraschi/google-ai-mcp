@@ -5,10 +5,13 @@ Migration note (Feb 2026):
   Switched from vertexai.preview.vision_models.ImageGenerationModel
   to google-genai native image generation via response_modalities=["IMAGE"].
 
-Model lineup (Feb 2026):
-  - gemini-3.1-flash-image-preview  = Nano Banana 2 (released Feb 26 2026, latest)
-  - gemini-3-pro-image-preview       = Nano Banana Pro (image editing, high quality)
-  Both use generate_content with IMAGE modality via google-genai SDK.
+Model lineup (Oct 2026):
+  - gemini-nano-banana-2.1  = Nano Banana 2.1 (Oct 6 2026, latest high-efficiency gen + editing)
+  - gemini-3.1-flash-image  = Nano Banana 2 (GA)
+  - gemini-3-pro-image      = Nano Banana Pro (GA, studio quality / 4K)
+  The *-preview ids were shut down Jun 25 2026; Imagen 4 ids on the Gemini API on Aug 17 2026.
+  All use generate_content with IMAGE modality via google-genai SDK.
+  ImageConfig has no number_of_images field: multiple images = multiple calls.
 """
 
 from __future__ import annotations
@@ -26,19 +29,39 @@ from google.genai import types
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image-preview"  # Nano Banana 2
+NANO_BANANA_21 = "gemini-nano-banana-2.1"
+NANO_BANANA_2 = "gemini-3.1-flash-image"
+NANO_BANANA_PRO = "gemini-3-pro-image"
+DEFAULT_IMAGE_MODEL = NANO_BANANA_21
 
 AVAILABLE_MODELS = {
-    "gemini-3.1-flash-image-preview": "Nano Banana 2 (Gemini 3.1 Flash Image, Feb 2026)",
-    "gemini-3-pro-image-preview": "Nano Banana Pro (Gemini 3 Pro Image, high quality)",
+    NANO_BANANA_21: "Nano Banana 2.1 (Oct 2026, latest, default)",
+    NANO_BANANA_2: "Nano Banana 2 (Gemini 3.1 Flash Image, GA)",
+    NANO_BANANA_PRO: "Nano Banana Pro (Gemini 3 Pro Image, GA, high quality / 4K)",
 }
 
-# Friendly-name aliases accepted from UI / API requests
+# Friendly-name aliases and retired ids accepted from UI / API requests
 _MODEL_ALIASES: dict[str, str] = {
-    "nano-banana-2": "gemini-3.1-flash-image-preview",
-    "nano-banana-pro": "gemini-3-pro-image-preview",
-    "nano-banana": "gemini-3.1-flash-image-preview",
+    "nano-banana": NANO_BANANA_21,
+    "nano-banana-2.1": NANO_BANANA_21,
+    "nano-banana-2": NANO_BANANA_2,
+    "nano-banana-pro": NANO_BANANA_PRO,
+    # retired (shut down Jun 25 2026)
+    "gemini-3.1-flash-image-preview": NANO_BANANA_2,
+    "gemini-3-pro-image-preview": NANO_BANANA_PRO,
+    "gemini-2.5-flash-image": NANO_BANANA_21,
+    # retired Imagen 4 on Gemini API (Aug 17 2026)
+    "imagen-4.0-generate-001": NANO_BANANA_21,
+    "imagen-4.0-ultra-generate-001": NANO_BANANA_PRO,
+    "imagen-4.0-fast-generate-001": NANO_BANANA_21,
 }
+
+
+def resolve_image_model(model: str | None) -> str:
+    if not model:
+        return DEFAULT_IMAGE_MODEL
+    m = model.strip()
+    return _MODEL_ALIASES.get(m.lower(), m)
 
 
 class ImagenClient:
@@ -95,8 +118,8 @@ class ImagenClient:
         reference_image: bytes | None = None,
     ) -> dict[str, Any]:
         """Generate image(s) from a text prompt."""
-        # Resolve friendly-name aliases
-        model = _MODEL_ALIASES.get(model, model)
+        model = resolve_image_model(model)
+        num_images = max(1, min(num_images, 4))
         if self.mock_mode:
             return self._mock_result(prompt, model, output_path, num_images)
 
@@ -109,17 +132,7 @@ class ImagenClient:
 
             config = types.GenerateContentConfig(
                 response_modalities=["IMAGE"],
-                image_config=types.ImageConfig(
-                    aspect_ratio=aspect_ratio,
-                    number_of_images=min(num_images, 4),
-                ),
-            )
-
-            response = await asyncio.to_thread(
-                self._client.models.generate_content,
-                model=model,
-                contents=contents,
-                config=config,
+                image_config=types.ImageConfig(aspect_ratio=aspect_ratio),
             )
 
             images_out = []
@@ -127,17 +140,25 @@ class ImagenClient:
             out_dir = Path(output_path) if output_path else Path("uploads/images")
             out_dir.mkdir(parents=True, exist_ok=True)
 
-            for i, part in enumerate(response.candidates[0].content.parts):
-                if part.inline_data is not None:
-                    img_data = part.inline_data.data
-                    filename = f"image_{timestamp}_{i}.png"
+            from PIL import Image
+
+            for call_idx in range(num_images):
+                response = await asyncio.to_thread(
+                    self._client.models.generate_content,
+                    model=model,
+                    contents=contents,
+                    config=config,
+                )
+                candidates = response.candidates or []
+                if not candidates or not candidates[0].content or not candidates[0].content.parts:
+                    continue
+                for i, part in enumerate(candidates[0].content.parts):
+                    if part.inline_data is None:
+                        continue
+                    filename = f"image_{timestamp}_{call_idx}_{i}.png"
                     file_path = out_dir / filename
-
-                    from PIL import Image
-
-                    img = Image.open(BytesIO(img_data))
+                    img = Image.open(BytesIO(part.inline_data.data))
                     img.save(str(file_path), "PNG")
-
                     images_out.append(
                         {
                             "filename": filename,
